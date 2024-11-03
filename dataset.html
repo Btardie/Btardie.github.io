@@ -72,20 +72,6 @@
             margin-bottom: 10px;
             text-align: center;
         }
-        .description p,
-        .description li {
-            font-size: 1em;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-        .description ul {
-            margin-left: 20px;
-            padding-left: 20px;
-        }
-        .description strong {
-            font-weight: bold;
-            color: #5C3D2E;
-        }
 
         /* Main Content Layout */
         main {
@@ -242,116 +228,8 @@
         </div>
     </main>
 
-    <!-- Inline JavaScript -->
-    <script>
-        let columnCount = 0;
-
-        function addColumn() {
-            columnCount++;
-            const container = document.getElementById("columnContainer");
-
-            const div = document.createElement("div");
-            div.classList.add("column-settings");
-
-            div.innerHTML = `
-                <h3>Column ${columnCount}</h3>
-                <label>Column Name:</label>
-                <input type="text" name="colName${columnCount}" placeholder="Enter column name" oninput="generatePreview()" aria-label="Column name">
-
-                <label>Data Type:</label>
-                <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();" aria-label="Data type">
-                    <option value="text">Text</option>
-                    <option value="number">Number</option>
-                    <option value="date">Date</option>
-                    <option value="category">Category</option>
-                </select>
-
-                <div id="colOptions${columnCount}" class="options-container"></div>
-            `;
-            container.appendChild(div);
-            generatePreview();
-        }
-
-        function configureColumnOptions(colNum, type) {
-            const optionsDiv = document.getElementById(`colOptions${colNum}`);
-            optionsDiv.innerHTML = "";
-
-            if (type === "text") {
-                optionsDiv.innerHTML = `
-                    <label>Sample Text Values (comma-separated):</label>
-                    <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie" oninput="generatePreview()">
-                `;
-            } else if (type === "number") {
-                optionsDiv.innerHTML = `
-                    <label>Mode:</label>
-                    <select name="mode${colNum}" onchange="generatePreview()">
-                        <option value="basic">Basic</option>
-                        <option value="advanced">Advanced</option>
-                    </select>
-                    <div id="basicOptions${colNum}" class="basic-options">
-                        <label>Range:</label>
-                        <input type="number" name="minNum${colNum}" placeholder="Min" oninput="generatePreview()">
-                        <input type="number" name="maxNum${colNum}" placeholder="Max" oninput="generatePreview()">
-                    </div>
-                    <div id="advancedOptions${colNum}" class="advanced-options" style="display: none;">
-                        <label>Mean:</label>
-                        <input type="number" name="mean${colNum}" placeholder="Mean" oninput="generatePreview()">
-                        <label>Standard Deviation:</label>
-                        <input type="number" name="stddev${colNum}" placeholder="Standard Deviation" oninput="generatePreview()">
-                    </div>
-                `;
-                
-                const modeSelector = optionsDiv.querySelector(`select[name="mode${colNum}"]`);
-                modeSelector.addEventListener('change', () => {
-                    const basicOptions = document.getElementById(`basicOptions${colNum}`);
-                    const advancedOptions = document.getElementById(`advancedOptions${colNum}`);
-                    if (modeSelector.value === "basic") {
-                        basicOptions.style.display = "block";
-                        advancedOptions.style.display = "none";
-                    } else {
-                        basicOptions.style.display = "none";
-                        advancedOptions.style.display = "block";
-                    }
-                });
-            } else if (type === "date") {
-                optionsDiv.innerHTML = `
-                    <label>Start Date:</label>
-                    <input type="date" name="startDate${colNum}" oninput="generatePreview()">
-                    <label>End Date:</label>
-                    <input type="date" name="endDate${colNum}" oninput="generatePreview()">
-                `;
-            } else if (type === "category") {
-                optionsDiv.innerHTML = `
-                    <label>Categories (comma-separated):</label>
-                    <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green" oninput="generatePreview()">
-                `;
-            }
-        }
-
-        function generateCell(col) {
-            if (col.type === "number") {
-                const mode = col.options.querySelector(`select[name="mode${col.colNum}"]`).value;
-                if (mode === "basic") {
-                    const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
-                    const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
-                    return Math.floor(Math.random() * (max - min + 1)) + min;
-                } else if (mode === "advanced") {
-                    const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
-                    const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
-                    return Math.round((Math.random() * stddev) + mean);
-                }
-            }
-            return 'N/A';
-        }
-
-        function generatePreview() {
-            // Preview generation logic...
-        }
-
-        function downloadDataset() {
-            // Dataset download logic...
-        }
-    </script>
+    <!-- Link to JavaScript file -->
+    <script src="dataGenerator.js"></script>
 
 </body>
 </html>
