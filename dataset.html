@@ -4,7 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Dataset</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Add your styles here if needed -->
+    <link rel="stylesheet" href="styles.css"> <!-- Link to an external CSS file if needed -->
+
+    <style>
+        /* Basic Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFF4E0;
+            color: #5C3D2E;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        nav {
+            width: 100%;
+            background-color: #FFD1A9;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #5C3D2E;
+            font-weight: bold;
+        }
+        main {
+            display: flex;
+            margin-top: 60px;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 20px;
+            background-color: #FFF7EB;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            background-color: #FFD1A9;
+            color: #5C3D2E;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #FFD1A9;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,28 +101,23 @@
         </ul>
     </nav>
 
+    <!-- Main Content -->
     <main>
-        <h1>Create Your Dataset</h1>
-        <div class="form-container">
+        <!-- Left Panel for User Input -->
+        <div class="left-panel">
+            <h2>Dataset Specifications</h2>
             <label for="numRecords">Number of Records:</label>
-            <input type="number" id="numRecords" name="numRecords" min="1" value="5">
+            <input type="number" id="numRecords" name="numRecords" min="1" value="5" oninput="generatePreview()">
             <button onclick="addColumn()">Add Column</button>
+            <div id="columnContainer"></div>
         </div>
 
-        <!-- Column Configuration Section -->
-        <div id="columnContainer" class="form-container">
-            <h2>Column Specifications</h2>
-            <!-- Columns will be added here dynamically -->
-        </div>
-
-        <!-- Preview Table -->
-        <div id="preview-container">
+        <!-- Right Panel for Dataset Preview -->
+        <div class="right-panel">
             <h2>Dataset Preview</h2>
             <table id="previewTable"></table>
+            <button onclick="downloadDataset()">Download Dataset</button>
         </div>
-
-        <!-- Download Button -->
-        <button onclick="downloadDataset()">Download Dataset</button>
     </main>
 
     <!-- Link to the external JavaScript file -->
@@ -48,3 +125,4 @@
 
 </body>
 </html>
+
