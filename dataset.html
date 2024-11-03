@@ -44,29 +44,53 @@
             color: #5C3D2E;
             font-weight: bold;
         }
+        
+        /* Description Section */
         .description {
+            width: 90%;
             max-width: 800px;
-            text-align: center;
+            text-align: left;
             color: #5C3D2E;
             background-color: #FFD1A9;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin: 80px 0 20px 0; /* Adjusted margin to accommodate the fixed navbar */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .description h2 {
-            font-size: 1.8em;
+            font-size: 1.6em;
             margin-bottom: 10px;
+            text-align: center;
         }
-        .description p {
+        .description p,
+        .description li {
             font-size: 1em;
             line-height: 1.6;
+            margin-bottom: 10px;
         }
+        .description ul {
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        .description .step {
+            margin-bottom: 15px;
+        }
+        .description strong {
+            font-weight: bold;
+            color: #5C3D2E;
+        }
+
+        /* Main Content Layout */
         main {
             display: flex;
+            flex-direction: column;
             width: 90%;
             max-width: 1200px;
-            padding: 20px;
+        }
+        .panels {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
         }
         .left-panel, .right-panel {
             flex: 1;
@@ -75,6 +99,8 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin: 10px;
+            width: 100%;
+            max-width: 580px;
         }
         .right-panel {
             display: flex;
@@ -103,6 +129,23 @@
         th {
             background-color: #FFD1A9;
         }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .description h2 {
+                font-size: 1.4em;
+            }
+            .description p,
+            .description li {
+                font-size: 0.95em;
+            }
+            .panels {
+                flex-direction: column;
+                align-items: center;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -121,39 +164,49 @@
     <!-- Description Section -->
     <div class="description">
         <h2>Welcome to the Dataset Generator Tool!</h2>
-        <p>
-            This tool allows you to create custom datasets tailored to your specific needs. Here's how to use it:
-        </p>
-        <p><strong>1. Specify the Number of Records:</strong> Start by entering the total number of records you want in your dataset. This determines the size of the dataset to be generated.</p>
-        <p><strong>2. Add Columns with Desired Data Types:</strong> Use the "Add Column" button to add each column you need in your dataset. You can specify various data types:
+        <div class="step">
+            <p><strong>Step 1: Specify the Number of Records</strong></p>
+            <p>Enter the total number of records you want in your dataset. This defines the size of the dataset.</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 2: Add Columns and Choose Data Types</strong></p>
+            <p>Click "Add Column" to create a new column. You can specify different data types for each column:</p>
             <ul>
-                <li><strong>Text:</strong> Create columns with randomized text values. You can enter sample text values, and the tool will randomly select one for each record.</li>
-                <li><strong>Number:</strong> Generate columns with random numbers. You can set the minimum and maximum range for numeric values.</li>
-                <li><strong>Date:</strong> Add date columns with randomized dates. Specify a start and end date to create a range, and the tool will generate dates within this interval.</li>
-                <li><strong>Category:</strong> Create categorical columns with predefined options. Enter category values, and the tool will randomly select one for each row.</li>
+                <li><strong>Text:</strong> Enter sample text values separated by commas, and the tool will randomly select one for each row.</li>
+                <li><strong>Number:</strong> Define a range (minimum and maximum values), and the tool will generate random numbers within this range.</li>
+                <li><strong>Date:</strong> Specify a start and end date, and the tool will generate random dates within this range.</li>
+                <li><strong>Category:</strong> Provide categories (e.g., "Red, Blue, Green"), and the tool will randomly assign one to each row.</li>
             </ul>
-        </p>
-        <p><strong>3. Interactive Preview:</strong> As you configure your columns, the preview table on the right will update automatically, showing the first 15 rows of your dataset. This interactive preview helps you visualize the structure and content of your dataset before downloading.</p>
-        <p><strong>4. Download Full Dataset:</strong> Once satisfied with your dataset setup, click "Download Dataset" to download a CSV file containing the full dataset based on the specified number of records.</p>
-        <p>This tool is perfect for creating sample data for testing, prototyping data analysis workflows, or generating realistic datasets for training machine learning models.</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 3: Interactive Preview</strong></p>
+            <p>The preview table on the right updates automatically, showing the first 15 rows of your dataset as you make changes. This preview helps you check your setup before downloading.</p>
+        </div>
+        <div class="step">
+            <p><strong>Step 4: Download Full Dataset</strong></p>
+            <p>Once you're satisfied with your setup, click "Download Dataset" to download the complete dataset as a CSV file. The file will contain all records based on your specified number of rows.</p>
+        </div>
+        <p>This tool is perfect for generating sample data for testing, prototyping data analysis, or creating realistic datasets for machine learning models.</p>
     </div>
 
     <!-- Main Content (Split Panels) -->
     <main>
-        <!-- Left Panel for User Input -->
-        <div class="left-panel">
-            <h2>Create Your Dataset</h2>
-            <label for="numRecords">Number of Records:</label>
-            <input type="number" id="numRecords" name="numRecords" min="1" value="5" oninput="generatePreview()">
-            <button onclick="addColumn()">Add Column</button>
-            <div id="columnContainer"></div>
-        </div>
+        <div class="panels">
+            <!-- Left Panel for User Input -->
+            <div class="left-panel">
+                <h2>Create Your Dataset</h2>
+                <label for="numRecords">Number of Records:</label>
+                <input type="number" id="numRecords" name="numRecords" min="1" value="5" oninput="generatePreview()">
+                <button onclick="addColumn()">Add Column</button>
+                <div id="columnContainer"></div>
+            </div>
 
-        <!-- Right Panel for Dataset Preview -->
-        <div class="right-panel">
-            <h2>Dataset Preview</h2>
-            <table id="previewTable"></table>
-            <button onclick="downloadDataset()">Download Dataset</button>
+            <!-- Right Panel for Dataset Preview -->
+            <div class="right-panel">
+                <h2>Dataset Preview</h2>
+                <table id="previewTable"></table>
+                <button onclick="downloadDataset()">Download Dataset</button>
+            </div>
         </div>
     </main>
 
