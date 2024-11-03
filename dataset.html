@@ -86,6 +86,13 @@
         th {
             background-color: #FFD1A9;
         }
+        .description {
+            font-size: 1em;
+            color: #5C3D2E;
+            margin-bottom: 20px;
+            max-width: 600px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -105,7 +112,11 @@
     <main>
         <!-- Left Panel for User Input -->
         <div class="left-panel">
-            <h2>Dataset Specifications</h2>
+            <h2>Create Your Dataset</h2>
+            <p class="description">
+                Welcome to the dataset generator! To get started, specify the number of records, then add columns with your desired data type.
+                Each column can be customized for text, numbers, dates, or categories. The dataset preview will update automatically as you make changes.
+            </p>
             <label for="numRecords">Number of Records:</label>
             <input type="number" id="numRecords" name="numRecords" min="1" value="5" oninput="generatePreview()">
             <button onclick="addColumn()">Add Column</button>
@@ -125,4 +136,3 @@
 
 </body>
 </html>
-
