@@ -79,6 +79,7 @@ function generatePreview() {
 
     // Generate rows of data based on column settings
     const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
+    console.log("Generated Rows:", rows);  // Debugging statement
     displayPreviewTable(columns.map(c => c.name), rows);
 }
 
@@ -126,6 +127,7 @@ function displayPreviewTable(columns, rows) {
         });
         table.appendChild(tr);
     });
+    console.log("Table Content Updated");  // Debugging statement
 }
 
 function downloadDataset() {
