@@ -11,27 +11,25 @@ function addColumn() {
     div.innerHTML = `
         <h3>Column ${columnCount}</h3>
         <label>Column Name:</label>
-        <input type="text" name="colName${columnCount}" placeholder="Enter column name" oninput="generatePreview()">
+        <input type="text" name="colName${columnCount}" placeholder="Enter column name" oninput="generatePreview()" aria-label="Column name">
 
         <label>Data Type:</label>
-        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();">
+        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();" aria-label="Data type">
             <option value="text">Text</option>
             <option value="number">Number</option>
             <option value="date">Date</option>
             <option value="category">Category</option>
         </select>
 
-        <div id="colOptions${columnCount}" class="options-container">
-            <!-- Additional options will appear here based on selected data type -->
-        </div>
+        <div id="colOptions${columnCount}" class="options-container"></div>
     `;
     container.appendChild(div);
-    generatePreview(); // Update preview whenever a column is added
+    generatePreview();
 }
 
 function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
-    optionsDiv.innerHTML = ""; // Clear previous options
+    optionsDiv.innerHTML = "";
 
     if (type === "text") {
         optionsDiv.innerHTML = `
@@ -125,6 +123,9 @@ function displayPreviewTable(columns, rows) {
 }
 
 function downloadDataset() {
+    const spinner = document.getElementById("loadingSpinner");
+    spinner.style.display = "block"; // Show spinner
+
     const totalRecords = parseInt(document.getElementById('numRecords').value);
     const columns = [];
 
@@ -151,4 +152,6 @@ function downloadDataset() {
     a.download = 'dataset.csv';
     a.click();
     URL.revokeObjectURL(url);
+
+    setTimeout(() => spinner.style.display = "none", 500); // Hide spinner after download
 }
