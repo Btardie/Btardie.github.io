@@ -97,6 +97,15 @@ function generateCell(col) {
             const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
             return Math.round((Math.random() * stddev) + mean);
         }
+    } else if (col.type === "date") {
+        const startDate = new Date(col.options.querySelector(`[name="startDate${col.colNum}"]`)?.value);
+        const endDate = new Date(col.options.querySelector(`[name="endDate${col.colNum}"]`)?.value);
+        if (isNaN(startDate) || isNaN(endDate)) return '2023-01-01';
+        const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+        return randomDate.toISOString().split('T')[0];
+    } else if (col.type === "category") {
+        const categories = col.options.querySelector(`input[name="categories${col.colNum}"]`)?.value.split(',').map(c => c.trim());
+        return categories?.[Math.floor(Math.random() * categories.length)] || 'Category';
     }
     return 'N/A';
 }
