@@ -60,7 +60,7 @@ function configureColumnOptions(colNum, type) {
 }
 
 function generatePreview() {
-    const numRecords = parseInt(document.getElementById('numRecords').value);
+    const numPreviewRows = 5; // Number of rows to display in the interactive preview
     const columns = [];
 
     // Collect column configurations
@@ -77,9 +77,8 @@ function generatePreview() {
         });
     }
 
-    // Generate rows of data based on column settings
-    const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
-    console.log("Generated Rows:", rows);  // Debugging statement
+    // Generate a limited number of preview rows based on column settings
+    const rows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
     displayPreviewTable(columns.map(c => c.name), rows);
 }
 
@@ -117,7 +116,7 @@ function displayPreviewTable(columns, rows) {
     });
     table.appendChild(headerRow);
 
-    // Populate data rows
+    // Populate data rows for preview
     rows.forEach(row => {
         const tr = document.createElement('tr');
         row.forEach(cell => {
@@ -127,14 +126,28 @@ function displayPreviewTable(columns, rows) {
         });
         table.appendChild(tr);
     });
-    console.log("Table Content Updated");  // Debugging statement
 }
 
 function downloadDataset() {
-    const table = document.getElementById('previewTable');
-    const csvContent = Array.from(table.querySelectorAll('tr'))
-        .map(row => Array.from(row.querySelectorAll('td, th'))
-        .map(cell => cell.textContent).join(',')).join('\n');
+    const numRecords = parseInt(document.getElementById('numRecords').value);
+    const columns = [];
+
+    for (let i = 1; i <= columnCount; i++) {
+        const colName = document.querySelector(`[name=colName${i}]`).value || `Column ${i}`;
+        const colType = document.querySelector(`[name=colType${i}]`).value;
+        const colOptions = document.querySelector(`#colOptions${i}`);
+        
+        columns.push({
+            name: colName,
+            type: colType,
+            options: colOptions,
+            colNum: i
+        });
+    }
+
+    // Generate full dataset for download
+    const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
+    const csvContent = [columns.map(c => c.name).join(','), ...rows.map(row => row.join(','))].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
