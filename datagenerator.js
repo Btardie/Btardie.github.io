@@ -15,7 +15,8 @@ function addColumn() {
         <label>Data Type:</label>
         <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();" aria-label="Data type">
             <option value="text">Text</option>
-            <option value="number">Number</option>
+            <option value="integer">Integer</option>
+            <option value="float">Float</option>
             <option value="date">Date</option>
             <option value="category">Category</option>
         </select>
@@ -34,8 +35,10 @@ function configureColumnOptions(colNum, type) {
         optionsDiv.innerHTML = `
             <label>Sample Text Values (comma-separated):</label>
             <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie" oninput="generatePreview()">
+            <label>Probabilities (comma-separated, matching text values):</label>
+            <input type="text" name="textProbabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
         `;
-    } else if (type === "number") {
+    } else if (type === "integer" || type === "float") {
         optionsDiv.innerHTML = `
             <label>Mode:</label>
             <select name="mode${colNum}" onchange="generatePreview()">
@@ -78,6 +81,8 @@ function configureColumnOptions(colNum, type) {
         optionsDiv.innerHTML = `
             <label>Categories (comma-separated):</label>
             <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green" oninput="generatePreview()">
+            <label>Probabilities (comma-separated, matching categories):</label>
+            <input type="text" name="categoryProbabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
         `;
     }
 }
@@ -85,17 +90,21 @@ function configureColumnOptions(colNum, type) {
 function generateCell(col) {
     if (col.type === "text") {
         const values = col.options.querySelector(`input[name="textValues${col.colNum}"]`)?.value.split(',').map(v => v.trim());
-        return values?.[Math.floor(Math.random() * values.length)] || 'Sample Text';
-    } else if (col.type === "number") {
+        const probabilities = col.options.querySelector(`input[name="textProbabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
+        return selectRandomValue(values, probabilities) || 'Sample Text';
+    } else if (col.type === "integer" || col.type === "float") {
         const mode = col.options.querySelector(`select[name="mode${col.colNum}"]`).value;
+        const isInteger = col.type === "integer";
         if (mode === "basic") {
             const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
             const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+            const value = Math.random() * (max - min) + min;
+            return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
         } else if (mode === "advanced") {
             const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
             const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
-            return Math.round((Math.random() * stddev) + mean);
+            const value = (Math.random() * stddev) + mean;
+            return isInteger ? Math.round(value) : parseFloat(value.toFixed(2));
         }
     } else if (col.type === "date") {
         const startDate = new Date(col.options.querySelector(`[name="startDate${col.colNum}"]`)?.value);
@@ -105,9 +114,24 @@ function generateCell(col) {
         return randomDate.toISOString().split('T')[0];
     } else if (col.type === "category") {
         const categories = col.options.querySelector(`input[name="categories${col.colNum}"]`)?.value.split(',').map(c => c.trim());
-        return categories?.[Math.floor(Math.random() * categories.length)] || 'Category';
+        const probabilities = col.options.querySelector(`input[name="categoryProbabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
+        return selectRandomValue(categories, probabilities) || 'Category';
     }
     return 'N/A';
+}
+
+function selectRandomValue(values, probabilities) {
+    if (!values || !probabilities || values.length !== probabilities.length) return null;
+    const totalProbability = probabilities.reduce((a, b) => a + b, 0);
+    const random = Math.random() * totalProbability;
+    let cumulativeProbability = 0;
+    for (let i = 0; i < values.length; i++) {
+        cumulativeProbability += probabilities[i];
+        if (random < cumulativeProbability) {
+            return values[i];
+        }
+    }
+    return values[values.length - 1];
 }
 
 function generatePreview() {
