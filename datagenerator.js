@@ -79,12 +79,27 @@ function configureColumnOptions(colNum, type) {
         `;
     } else if (type === "category") {
         optionsDiv.innerHTML = `
-            <label>Categories (comma-separated):</label>
-            <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green" oninput="generatePreview()">
-            <label>Probabilities (comma-separated, matching categories):</label>
-            <input type="text" name="categoryProbabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
+            <label>Categories:</label>
+            <div id="categoryOptions${colNum}"></div>
+            <button type="button" onclick="addCategoryOption(${colNum})">Add Category</button>
         `;
+        addCategoryOption(colNum); // Add the first category option by default
     }
+}
+
+function addCategoryOption(colNum) {
+    const categoryContainer = document.getElementById(`categoryOptions${colNum}`);
+    const categoryCount = categoryContainer.children.length + 1;
+    
+    const categoryDiv = document.createElement("div");
+    categoryDiv.classList.add("category-option");
+    categoryDiv.innerHTML = `
+        <label>Category ${categoryCount}:</label>
+        <input type="text" name="categoryValue${colNum}_${categoryCount}" placeholder="Category value" oninput="generatePreview()">
+        <label>Probability:</label>
+        <input type="number" step="0.01" name="categoryProbability${colNum}_${categoryCount}" placeholder="e.g., 0.5" oninput="generatePreview()">
+    `;
+    categoryContainer.appendChild(categoryDiv);
 }
 
 function generateCell(col) {
@@ -113,9 +128,16 @@ function generateCell(col) {
         const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
         return randomDate.toISOString().split('T')[0];
     } else if (col.type === "category") {
-        const categories = col.options.querySelector(`input[name="categories${col.colNum}"]`)?.value.split(',').map(c => c.trim());
-        const probabilities = col.options.querySelector(`input[name="categoryProbabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
-        return selectRandomValue(categories, probabilities) || 'Category';
+        const values = [];
+        const probabilities = [];
+        const categoryOptions = col.options.querySelectorAll(".category-option");
+        categoryOptions.forEach(option => {
+            const value = option.querySelector(`input[name^="categoryValue"]`).value.trim();
+            const probability = parseFloat(option.querySelector(`input[name^="categoryProbability"]`).value) || 0;
+            values.push(value);
+            probabilities.push(probability);
+        });
+        return selectRandomValue(values, probabilities) || 'Category';
     }
     return 'N/A';
 }
@@ -211,3 +233,4 @@ function downloadDataset() {
 
     setTimeout(() => spinner.style.display = "none", 500);
 }
+
