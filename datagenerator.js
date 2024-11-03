@@ -4,11 +4,13 @@ function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
 
+    // Check if container exists
     if (!container) {
-        console.error("Container not found");
+        console.error("Column container not found");
         return;
     }
 
+    // Create a new div for each column's settings
     const div = document.createElement("div");
     div.classList.add("column-settings");
 
@@ -30,13 +32,14 @@ function addColumn() {
         </div>
     `;
     container.appendChild(div);
-    generatePreview(); // Generate preview when a column is added
+    generatePreview(); // Update preview whenever a column is added
 }
 
 function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
     optionsDiv.innerHTML = ""; // Clear previous options
 
+    // Add specific options based on selected data type
     if (type === "text") {
         optionsDiv.innerHTML = `
             <label>Sample Text Values (comma-separated):</label>
@@ -67,6 +70,7 @@ function generatePreview() {
     const numRecords = document.getElementById('numRecords').value;
     const columns = [];
 
+    // Collect column configurations
     for (let i = 1; i <= columnCount; i++) {
         const colName = document.querySelector(`[name=colName${i}]`).value;
         const colType = document.querySelector(`[name=colType${i}]`).value;
@@ -79,6 +83,7 @@ function generatePreview() {
         });
     }
 
+    // Generate rows of data based on column settings
     const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
     displayPreviewTable(columns.map(c => c.name), rows);
 }
