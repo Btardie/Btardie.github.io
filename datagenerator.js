@@ -133,4 +133,3 @@ function downloadDataset() {
     a.click();
     URL.revokeObjectURL(url);
 }
-
