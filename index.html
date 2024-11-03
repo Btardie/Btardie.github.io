@@ -30,12 +30,17 @@
             width: 100%;
             background-color: #FFD1A9;
             padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
 
         nav ul {
             list-style-type: none;
             display: flex;
             justify-content: center;
+            margin: 0;
         }
 
         nav ul li {
@@ -46,6 +51,11 @@
             text-decoration: none;
             color: #5C3D2E;
             font-weight: bold;
+        }
+
+        /* Adjust page content for fixed nav */
+        main {
+            padding-top: 60px; /* offset for fixed nav height */
         }
 
         /* Main Content */
@@ -140,7 +150,7 @@
 
     <!-- Footer -->
     <footer>
-        &copy; 2024 Brett Tardie
+        &copy; 2024 Brett T
     </footer>
 
 </body>
