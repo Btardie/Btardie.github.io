@@ -60,10 +60,9 @@ function configureColumnOptions(colNum, type) {
 }
 
 function generatePreview() {
-    const numPreviewRows = 15; // Display only the first 15 rows in the interactive preview
+    const numPreviewRows = 15;
     const columns = [];
 
-    // Collect column configurations
     for (let i = 1; i <= columnCount; i++) {
         const colName = document.querySelector(`[name=colName${i}]`).value || `Column ${i}`;
         const colType = document.querySelector(`[name=colType${i}]`).value;
@@ -77,7 +76,6 @@ function generatePreview() {
         });
     }
 
-    // Generate only the preview dataset (first 15 rows) based on column settings
     const previewRows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
     displayPreviewTable(columns.map(c => c.name), previewRows);
 }
@@ -105,9 +103,8 @@ function generateCell(col) {
 
 function displayPreviewTable(columns, rows) {
     const table = document.getElementById('previewTable');
-    table.innerHTML = ''; // Clear previous content
+    table.innerHTML = '';
 
-    // Create header row
     const headerRow = document.createElement('tr');
     columns.forEach(col => {
         const th = document.createElement('th');
@@ -116,7 +113,6 @@ function displayPreviewTable(columns, rows) {
     });
     table.appendChild(headerRow);
 
-    // Populate data rows for preview
     rows.forEach(row => {
         const tr = document.createElement('tr');
         row.forEach(cell => {
@@ -145,7 +141,6 @@ function downloadDataset() {
         });
     }
 
-    // Generate full dataset for download
     const fullDataset = Array.from({ length: totalRecords }, () => columns.map(generateCell));
     const csvContent = [columns.map(c => c.name).join(','), ...fullDataset.map(row => row.join(','))].join('\n');
 
