@@ -60,7 +60,8 @@ function configureColumnOptions(colNum, type) {
 }
 
 function generatePreview() {
-    const numPreviewRows = 5; // Number of rows to display in the interactive preview
+    const numPreviewRows = 15; // Display the first 15 rows in the interactive preview
+    const totalRecords = parseInt(document.getElementById('numRecords').value);
     const columns = [];
 
     // Collect column configurations
@@ -77,9 +78,10 @@ function generatePreview() {
         });
     }
 
-    // Generate a limited number of preview rows based on column settings
-    const rows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
-    displayPreviewTable(columns.map(c => c.name), rows);
+    // Generate full dataset but only display the first 15 rows for the preview
+    const fullDataset = Array.from({ length: totalRecords }, () => columns.map(generateCell));
+    const previewRows = fullDataset.slice(0, numPreviewRows); // Take only the first 15 rows for preview
+    displayPreviewTable(columns.map(c => c.name), previewRows);
 }
 
 function generateCell(col) {
@@ -129,7 +131,7 @@ function displayPreviewTable(columns, rows) {
 }
 
 function downloadDataset() {
-    const numRecords = parseInt(document.getElementById('numRecords').value);
+    const totalRecords = parseInt(document.getElementById('numRecords').value);
     const columns = [];
 
     for (let i = 1; i <= columnCount; i++) {
@@ -146,8 +148,8 @@ function downloadDataset() {
     }
 
     // Generate full dataset for download
-    const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
-    const csvContent = [columns.map(c => c.name).join(','), ...rows.map(row => row.join(','))].join('\n');
+    const fullDataset = Array.from({ length: totalRecords }, () => columns.map(generateCell));
+    const csvContent = [columns.map(c => c.name).join(','), ...fullDataset.map(row => row.join(','))].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -157,3 +159,4 @@ function downloadDataset() {
     a.click();
     URL.revokeObjectURL(url);
 }
+
