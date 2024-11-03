@@ -4,6 +4,7 @@ function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
 
+    // Create a new div for each column's settings
     const div = document.createElement("div");
     div.classList.add("column-settings");
 
@@ -64,7 +65,7 @@ function generatePreview() {
 
     // Collect column configurations
     for (let i = 1; i <= columnCount; i++) {
-        const colName = document.querySelector(`[name=colName${i}]`).value;
+        const colName = document.querySelector(`[name=colName${i}]`).value || `Column ${i}`;
         const colType = document.querySelector(`[name=colType${i}]`).value;
         const colOptions = document.querySelector(`#colOptions${i}`);
         
@@ -83,28 +84,29 @@ function generatePreview() {
 
 function generateCell(col) {
     if (col.type === "text") {
-        const values = col.options.querySelector("input[name='textValues" + col.colNum + "']").value.split(',').map(v => v.trim());
-        return values[Math.floor(Math.random() * values.length)] || 'Sample Text';
+        const values = col.options.querySelector(`input[name="textValues${col.colNum}"]`)?.value.split(',').map(v => v.trim());
+        return values?.[Math.floor(Math.random() * values.length)] || 'Sample Text';
     } else if (col.type === "number") {
-        const min = parseFloat(col.options.querySelector(`[name=minNum${col.colNum}]`).value) || 0;
-        const max = parseFloat(col.options.querySelector(`[name=maxNum${col.colNum}]`).value) || 100;
+        const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
+        const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     } else if (col.type === "date") {
-        const start = new Date(col.options.querySelector(`[name=startDate${col.colNum}]`).value).getTime();
-        const end = new Date(col.options.querySelector(`[name=endDate${col.colNum}]`).value).getTime();
-        if (isNaN(start) || isNaN(end)) return '2023-01-01';
-        return new Date(start + Math.random() * (end - start)).toISOString().split('T')[0];
+        const startDate = new Date(col.options.querySelector(`[name="startDate${col.colNum}"]`)?.value);
+        const endDate = new Date(col.options.querySelector(`[name="endDate${col.colNum}"]`)?.value);
+        if (isNaN(startDate) || isNaN(endDate)) return '2023-01-01';
+        const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+        return randomDate.toISOString().split('T')[0];
     } else if (col.type === "category") {
-        const categories = col.options.querySelector("input[name='categories" + col.colNum + "']").value.split(',').map(c => c.trim());
-        return categories[Math.floor(Math.random() * categories.length)] || 'Category';
+        const categories = col.options.querySelector(`input[name="categories${col.colNum}"]`)?.value.split(',').map(c => c.trim());
+        return categories?.[Math.floor(Math.random() * categories.length)] || 'Category';
     }
     return 'N/A';
 }
 
 function displayPreviewTable(columns, rows) {
     const table = document.getElementById('previewTable');
-    table.innerHTML = '';
-    
+    table.innerHTML = ''; // Clear previous content
+
     // Create header row
     const headerRow = document.createElement('tr');
     columns.forEach(col => {
