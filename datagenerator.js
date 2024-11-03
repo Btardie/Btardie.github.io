@@ -9,10 +9,10 @@ function addColumn() {
     div.innerHTML = `
         <h3>Column ${columnCount}</h3>
         <label>Column Name:</label>
-        <input type="text" name="colName${columnCount}" placeholder="Enter column name">
+        <input type="text" name="colName${columnCount}" placeholder="Enter column name" oninput="generatePreview()">
 
         <label>Data Type:</label>
-        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value)">
+        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();">
             <option value="text">Text</option>
             <option value="number">Number</option>
             <option value="date">Date</option>
@@ -33,25 +33,25 @@ function configureColumnOptions(colNum, type) {
     if (type === "text") {
         optionsDiv.innerHTML = `
             <label>Sample Text Values (comma-separated):</label>
-            <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie">
+            <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie" oninput="generatePreview()">
         `;
     } else if (type === "number") {
         optionsDiv.innerHTML = `
             <label>Range:</label>
-            <input type="number" name="minNum${colNum}" placeholder="Min">
-            <input type="number" name="maxNum${colNum}" placeholder="Max">
+            <input type="number" name="minNum${colNum}" placeholder="Min" oninput="generatePreview()">
+            <input type="number" name="maxNum${colNum}" placeholder="Max" oninput="generatePreview()">
         `;
     } else if (type === "date") {
         optionsDiv.innerHTML = `
             <label>Start Date:</label>
-            <input type="date" name="startDate${colNum}">
+            <input type="date" name="startDate${colNum}" oninput="generatePreview()">
             <label>End Date:</label>
-            <input type="date" name="endDate${colNum}">
+            <input type="date" name="endDate${colNum}" oninput="generatePreview()">
         `;
     } else if (type === "category") {
         optionsDiv.innerHTML = `
             <label>Categories (comma-separated):</label>
-            <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green">
+            <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green" oninput="generatePreview()">
         `;
     }
 }
@@ -133,3 +133,4 @@ function downloadDataset() {
     a.click();
     URL.revokeObjectURL(url);
 }
+
