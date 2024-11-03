@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Dataset</title>
     <style>
+        /* Basic Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #FFF4E0;
@@ -14,51 +20,60 @@
             align-items: center;
             padding: 20px;
         }
-
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            text-align: center;
+        nav {
+            width: 100%;
+            background-color: #FFD1A9;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
-
-        .form-container {
-            width: 80%;
-            max-width: 500px;
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #5C3D2E;
+            font-weight: bold;
+        }
+        main {
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-container, .column-settings {
+            width: 100%;
+            max-width: 800px;
             background-color: #FFF7EB;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-
-        label, input, select {
-            display: block;
-            margin: 10px 0;
+        .column-settings input, .column-settings select {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            width: 100%;
         }
-
-        button {
-            background-color: #FFD1A9;
-            color: #5C3D2E;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
         table {
             margin-top: 20px;
             border-collapse: collapse;
             width: 100%;
-            max-width: 800px;
             background-color: #FFF7EB;
         }
-
         th, td {
             padding: 8px;
             text-align: center;
             border: 1px solid #ddd;
         }
-
         th {
             background-color: #FFD1A9;
         }
@@ -66,68 +81,142 @@
 </head>
 <body>
 
-    <h1>Create Your Dataset</h1>
-    <div class="form-container">
-        <label for="numRecords">Number of Records:</label>
-        <input type="number" id="numRecords" name="numRecords" min="1" value="5">
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#data-analysis">Data Analysis Types</a></li>
+            <li><a href="index.html#examples">Examples</a></li>
+            <li><a href="index.html#qa">Q&A</a></li>
+            <li><a href="dataset.html">Create Dataset</a></li>
+        </ul>
+    </nav>
 
-        <label for="columns">Columns (comma-separated):</label>
-        <input type="text" id="columns" name="columns" placeholder="Name, Age, Location">
+    <main>
+        <h1>Create Your Dataset</h1>
+        <div class="form-container">
+            <label for="numRecords">Number of Records:</label>
+            <input type="number" id="numRecords" name="numRecords" min="1" value="5">
+            <button onclick="addColumn()">Add Column</button>
+        </div>
 
-        <label for="dataTypes">Data Types (comma-separated: Text, Number, Date):</label>
-        <input type="text" id="dataTypes" name="dataTypes" placeholder="Text, Number, Text">
+        <!-- Column Configuration Section -->
+        <div id="columnContainer" class="form-container">
+            <h2>Column Specifications</h2>
+            <!-- Columns will be added here dynamically -->
+        </div>
 
-        <button onclick="generatePreview()">Generate Preview</button>
-    </div>
+        <!-- Preview Table -->
+        <div id="preview-container">
+            <h2>Dataset Preview</h2>
+            <table id="previewTable"></table>
+        </div>
 
-    <!-- Preview Table -->
-    <div id="preview-container">
-        <h2>Dataset Preview</h2>
-        <table id="previewTable"></table>
-    </div>
-
-    <!-- Download Button -->
-    <button onclick="downloadDataset()">Download Dataset</button>
+        <!-- Download Button -->
+        <button onclick="downloadDataset()">Download Dataset</button>
+    </main>
 
     <script>
-        function generatePreview() {
-            const numRecords = document.getElementById('numRecords').value;
-            const columns = document.getElementById('columns').value.split(',').map(col => col.trim());
-            const dataTypes = document.getElementById('dataTypes').value.split(',').map(type => type.trim());
+        let columnCount = 0;
 
-            if (columns.length !== dataTypes.length) {
-                alert("Please make sure the number of columns matches the number of data types.");
-                return;
-            }
+        function addColumn() {
+            columnCount++;
+            const container = document.getElementById("columnContainer");
+            const div = document.createElement("div");
+            div.classList.add("column-settings");
 
-            // Generate sample data based on data type
-            const rows = [];
-            for (let i = 0; i < numRecords; i++) {
-                const row = columns.map((col, index) => generateData(dataTypes[index]));
-                rows.push(row);
-            }
+            div.innerHTML = `
+                <h3>Column ${columnCount}</h3>
+                <label>Column Name:</label>
+                <input type="text" name="colName${columnCount}" placeholder="Enter column name">
 
-            // Display the data in a preview table
-            displayPreviewTable(columns, rows);
+                <label>Data Type:</label>
+                <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value)">
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="category">Category</option>
+                </select>
+
+                <div id="colOptions${columnCount}" class="options-container">
+                    <!-- Additional options will appear here based on selected data type -->
+                </div>
+            `;
+            container.appendChild(div);
         }
 
-        function generateData(type) {
-            switch(type.toLowerCase()) {
-                case 'text':
-                    return Math.random().toString(36).substring(2, 7); // Random text
-                case 'number':
-                    return Math.floor(Math.random() * 100); // Random number
-                case 'date':
-                    return new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split('T')[0]; // Random date
-                default:
-                    return ''; // Empty if unrecognized type
+        function configureColumnOptions(colNum, type) {
+            const optionsDiv = document.getElementById(`colOptions${colNum}`);
+            optionsDiv.innerHTML = ""; // Clear previous options
+
+            if (type === "text") {
+                optionsDiv.innerHTML = `
+                    <label>Sample Text Values (comma-separated):</label>
+                    <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie">
+                `;
+            } else if (type === "number") {
+                optionsDiv.innerHTML = `
+                    <label>Range:</label>
+                    <input type="number" name="minNum${colNum}" placeholder="Min">
+                    <input type="number" name="maxNum${colNum}" placeholder="Max">
+                `;
+            } else if (type === "date") {
+                optionsDiv.innerHTML = `
+                    <label>Start Date:</label>
+                    <input type="date" name="startDate${colNum}">
+                    <label>End Date:</label>
+                    <input type="date" name="endDate${colNum}">
+                `;
+            } else if (type === "category") {
+                optionsDiv.innerHTML = `
+                    <label>Categories (comma-separated):</label>
+                    <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green">
+                `;
+            }
+        }
+
+        function generatePreview() {
+            const numRecords = document.getElementById('numRecords').value;
+            const columns = [];
+
+            for (let i = 1; i <= columnCount; i++) {
+                const colName = document.querySelector(`[name=colName${i}]`).value;
+                const colType = document.querySelector(`[name=colType${i}]`).value;
+                const colOptions = document.querySelector(`#colOptions${i}`);
+                
+                columns.push({
+                    name: colName,
+                    type: colType,
+                    options: colOptions
+                });
+            }
+
+            const rows = Array.from({ length: numRecords }, () => columns.map(generateCell));
+            displayPreviewTable(columns.map(c => c.name), rows);
+        }
+
+        function generateCell(col) {
+            if (col.type === "text") {
+                const values = col.options.querySelector("input").value.split(',').map(v => v.trim());
+                return values[Math.floor(Math.random() * values.length)];
+            } else if (col.type === "number") {
+                const min = parseFloat(col.options.querySelector(`[name=minNum${col.colNum}]`).value);
+                const max = parseFloat(col.options.querySelector(`[name=maxNum${col.colNum}]`).value);
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            } else if (col.type === "date") {
+                const start = new Date(col.options.querySelector(`[name=startDate${col.colNum}]`).value).getTime();
+                const end = new Date(col.options.querySelector(`[name=endDate${col.colNum}]`).value).getTime();
+                return new Date(start + Math.random() * (end - start)).toISOString().split('T')[0];
+            } else if (col.type === "category") {
+                const categories = col.options.querySelector("input").value.split(',').map(c => c.trim());
+                return categories[Math.floor(Math.random() * categories.length)];
             }
         }
 
         function displayPreviewTable(columns, rows) {
             const table = document.getElementById('previewTable');
-            table.innerHTML = ''; // Clear previous content
-
+            table.innerHTML = '';
+            
             // Create header row
             const headerRow = document.createElement('tr');
             columns.forEach(col => {
@@ -137,30 +226,24 @@
             });
             table.appendChild(headerRow);
 
-            // Create data rows
+            // Populate data rows
             rows.forEach(row => {
                 const tr = document.createElement('tr');
                 row.forEach(cell => {
                     const td = document.createElement('td');
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = cell;
-                    input.oninput = function () { cell = input.value; }; // Update cell on edit
-                    td.appendChild(input);
+                    td.textContent = cell;
                     tr.appendChild(td);
                 });
                 table.appendChild(tr);
             });
         }
-
+        
         function downloadDataset() {
-            const table = document.getElementById('previewTable');
-            const rows = Array.from(table.querySelectorAll('tr'));
-            const csvContent = rows.map(row => 
-                Array.from(row.querySelectorAll('input')).map(cell => cell.value).join(',')
-            ).join('\n');
+            const csvContent = [...document.querySelectorAll('tr')]
+                .map(row => [...row.querySelectorAll('td, th')]
+                .map(cell => cell.textContent)
+                .join(',')).join('\n');
 
-            // Create and download CSV file
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -173,3 +256,4 @@
 
 </body>
 </html>
+
