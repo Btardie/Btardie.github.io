@@ -3,6 +3,12 @@ let columnCount = 0;
 function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
+
+    if (!container) {
+        console.error("Container not found");
+        return;
+    }
+
     const div = document.createElement("div");
     div.classList.add("column-settings");
 
@@ -24,6 +30,7 @@ function addColumn() {
         </div>
     `;
     container.appendChild(div);
+    generatePreview(); // Generate preview when a column is added
 }
 
 function configureColumnOptions(colNum, type) {
