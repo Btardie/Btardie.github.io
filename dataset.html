@@ -19,6 +19,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 20px;
         }
         nav {
             width: 100%;
@@ -43,9 +44,26 @@
             color: #5C3D2E;
             font-weight: bold;
         }
+        .description {
+            max-width: 800px;
+            text-align: center;
+            color: #5C3D2E;
+            background-color: #FFD1A9;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .description h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        .description p {
+            font-size: 1em;
+            line-height: 1.6;
+        }
         main {
             display: flex;
-            margin-top: 60px;
             width: 90%;
             max-width: 1200px;
             padding: 20px;
@@ -85,13 +103,6 @@
         th {
             background-color: #FFD1A9;
         }
-        .description {
-            font-size: 1em;
-            color: #5C3D2E;
-            margin-bottom: 20px;
-            max-width: 600px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -107,18 +118,33 @@
         </ul>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Description Section -->
+    <div class="description">
+        <h2>Welcome to the Dataset Generator Tool!</h2>
+        <p>
+            This tool allows you to create custom datasets tailored to your specific needs. Here's how to use it:
+        </p>
+        <p><strong>1. Specify the Number of Records:</strong> Start by entering the total number of records you want in your dataset. This determines the size of the dataset to be generated.</p>
+        <p><strong>2. Add Columns with Desired Data Types:</strong> Use the "Add Column" button to add each column you need in your dataset. You can specify various data types:
+            <ul>
+                <li><strong>Text:</strong> Create columns with randomized text values. You can enter sample text values, and the tool will randomly select one for each record.</li>
+                <li><strong>Number:</strong> Generate columns with random numbers. You can set the minimum and maximum range for numeric values.</li>
+                <li><strong>Date:</strong> Add date columns with randomized dates. Specify a start and end date to create a range, and the tool will generate dates within this interval.</li>
+                <li><strong>Category:</strong> Create categorical columns with predefined options. Enter category values, and the tool will randomly select one for each row.</li>
+            </ul>
+        </p>
+        <p><strong>3. Interactive Preview:</strong> As you configure your columns, the preview table on the right will update automatically, showing the first 15 rows of your dataset. This interactive preview helps you visualize the structure and content of your dataset before downloading.</p>
+        <p><strong>4. Download Full Dataset:</strong> Once satisfied with your dataset setup, click "Download Dataset" to download a CSV file containing the full dataset based on the specified number of records.</p>
+        <p>This tool is perfect for creating sample data for testing, prototyping data analysis workflows, or generating realistic datasets for training machine learning models.</p>
+    </div>
+
+    <!-- Main Content (Split Panels) -->
     <main>
         <!-- Left Panel for User Input -->
         <div class="left-panel">
             <h2>Create Your Dataset</h2>
-            <p class="description">
-                Welcome to the dataset generator! To get started, specify the number of records, then add columns with your desired data type.
-                Each column can be customized for text, numbers, dates, or categories. The dataset preview will update automatically as you make changes.
-            </p>
             <label for="numRecords">Number of Records:</label>
             <input type="number" id="numRecords" name="numRecords" min="1" value="5" oninput="generatePreview()">
-            <!-- Add Column Button -->
             <button onclick="addColumn()">Add Column</button>
             <div id="columnContainer"></div>
         </div>
@@ -132,7 +158,7 @@
     </main>
 
     <!-- Link to the external JavaScript file -->
-    <script src="datagenerator.js"></script>
+    <script src="dataGenerator.js"></script>
 
 </body>
 </html>
