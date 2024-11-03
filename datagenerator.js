@@ -4,7 +4,6 @@ function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
 
-    // Create a new div for each column's settings
     const div = document.createElement("div");
     div.classList.add("column-settings");
 
@@ -38,10 +37,36 @@ function configureColumnOptions(colNum, type) {
         `;
     } else if (type === "number") {
         optionsDiv.innerHTML = `
-            <label>Range:</label>
-            <input type="number" name="minNum${colNum}" placeholder="Min" oninput="generatePreview()">
-            <input type="number" name="maxNum${colNum}" placeholder="Max" oninput="generatePreview()">
+            <label>Mode:</label>
+            <select name="mode${colNum}" onchange="generatePreview()">
+                <option value="basic">Basic</option>
+                <option value="advanced">Advanced</option>
+            </select>
+            <div id="basicOptions${colNum}" class="basic-options">
+                <label>Range:</label>
+                <input type="number" name="minNum${colNum}" placeholder="Min" oninput="generatePreview()">
+                <input type="number" name="maxNum${colNum}" placeholder="Max" oninput="generatePreview()">
+            </div>
+            <div id="advancedOptions${colNum}" class="advanced-options" style="display: none;">
+                <label>Mean:</label>
+                <input type="number" name="mean${colNum}" placeholder="Mean" oninput="generatePreview()">
+                <label>Standard Deviation:</label>
+                <input type="number" name="stddev${colNum}" placeholder="Standard Deviation" oninput="generatePreview()">
+            </div>
         `;
+        
+        const modeSelector = optionsDiv.querySelector(`select[name="mode${colNum}"]`);
+        modeSelector.addEventListener('change', () => {
+            const basicOptions = document.getElementById(`basicOptions${colNum}`);
+            const advancedOptions = document.getElementById(`advancedOptions${colNum}`);
+            if (modeSelector.value === "basic") {
+                basicOptions.style.display = "block";
+                advancedOptions.style.display = "none";
+            } else {
+                basicOptions.style.display = "none";
+                advancedOptions.style.display = "block";
+            }
+        });
     } else if (type === "date") {
         optionsDiv.innerHTML = `
             <label>Start Date:</label>
@@ -55,6 +80,25 @@ function configureColumnOptions(colNum, type) {
             <input type="text" name="categories${colNum}" placeholder="e.g., Red, Blue, Green" oninput="generatePreview()">
         `;
     }
+}
+
+function generateCell(col) {
+    if (col.type === "text") {
+        const values = col.options.querySelector(`input[name="textValues${col.colNum}"]`)?.value.split(',').map(v => v.trim());
+        return values?.[Math.floor(Math.random() * values.length)] || 'Sample Text';
+    } else if (col.type === "number") {
+        const mode = col.options.querySelector(`select[name="mode${col.colNum}"]`).value;
+        if (mode === "basic") {
+            const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
+            const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        } else if (mode === "advanced") {
+            const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
+            const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
+            return Math.round((Math.random() * stddev) + mean);
+        }
+    }
+    return 'N/A';
 }
 
 function generatePreview() {
@@ -76,27 +120,6 @@ function generatePreview() {
 
     const previewRows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
     displayPreviewTable(columns.map(c => c.name), previewRows);
-}
-
-function generateCell(col) {
-    if (col.type === "text") {
-        const values = col.options.querySelector(`input[name="textValues${col.colNum}"]`)?.value.split(',').map(v => v.trim());
-        return values?.[Math.floor(Math.random() * values.length)] || 'Sample Text';
-    } else if (col.type === "number") {
-        const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
-        const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    } else if (col.type === "date") {
-        const startDate = new Date(col.options.querySelector(`[name="startDate${col.colNum}"]`)?.value);
-        const endDate = new Date(col.options.querySelector(`[name="endDate${col.colNum}"]`)?.value);
-        if (isNaN(startDate) || isNaN(endDate)) return '2023-01-01';
-        const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
-        return randomDate.toISOString().split('T')[0];
-    } else if (col.type === "category") {
-        const categories = col.options.querySelector(`input[name="categories${col.colNum}"]`)?.value.split(',').map(c => c.trim());
-        return categories?.[Math.floor(Math.random() * categories.length)] || 'Category';
-    }
-    return 'N/A';
 }
 
 function displayPreviewTable(columns, rows) {
@@ -124,7 +147,7 @@ function displayPreviewTable(columns, rows) {
 
 function downloadDataset() {
     const spinner = document.getElementById("loadingSpinner");
-    spinner.style.display = "block"; // Show spinner
+    spinner.style.display = "block";
 
     const totalRecords = parseInt(document.getElementById('numRecords').value);
     const columns = [];
@@ -153,5 +176,5 @@ function downloadDataset() {
     a.click();
     URL.revokeObjectURL(url);
 
-    setTimeout(() => spinner.style.display = "none", 500); // Hide spinner after download
+    setTimeout(() => spinner.style.display = "none", 500);
 }
