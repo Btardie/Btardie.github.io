@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Minimalist Page</title>
+    <title>Math Data Analysis</title>
     <style>
         /* Basic Reset */
         * {
@@ -20,9 +20,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
 
         /* Navigation Bar */
@@ -55,11 +55,28 @@
             text-align: center;
         }
 
+        h2 {
+            color: #5C3D2E;
+            font-size: 1.8em;
+            margin-top: 20px;
+        }
+
         p {
             font-size: 1.2em;
             text-align: center;
-            max-width: 600px;
+            max-width: 800px;
             line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        /* Section Styling */
+        .section {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #FFF7EB;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Footer */
@@ -76,15 +93,49 @@
     <nav>
         <ul>
             <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#data-analysis">Data Analysis Types</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#qa">Q&A</a></li>
         </ul>
     </nav>
 
     <!-- Main Content -->
     <main>
-        <h1>Welcome to My Minimalist Page</h1>
-        <p>This page is a simple, warm-themed website created using GitHub Pages. All the content is centered to provide a clean and focused experience. Enjoy browsing!</p>
+        <h1>Welcome to Math Data Analysis Hub</h1>
+        <p>Explore various types of data analysis, view examples, and join discussions to deepen your understanding of data science and statistics.</p>
+
+        <!-- Data Analysis Types Section -->
+        <div class="section" id="data-analysis">
+            <h2>Types of Data Analysis</h2>
+            <p>Data analysis encompasses various approaches to interpreting data. Here are some common types:</p>
+            <ul>
+                <li>Descriptive Analysis</li>
+                <li>Inferential Analysis</li>
+                <li>Predictive Analysis</li>
+                <li>Prescriptive Analysis</li>
+                <li>Exploratory Data Analysis (EDA)</li>
+            </ul>
+            <p>Each type provides different insights and is used for different purposes. Click on each type to learn more!</p>
+        </div>
+
+        <!-- Examples Section -->
+        <div class="section" id="examples">
+            <h2>Examples</h2>
+            <p>View practical examples of data analysis in action:</p>
+            <ul>
+                <li><a href="#example1">Example 1: Descriptive Statistics on Sales Data</a></li>
+                <li><a href="#example2">Example 2: Predictive Modeling for Weather Forecasting</a></li>
+                <li><a href="#example3">Example 3: Inferential Analysis in Medical Studies</a></li>
+            </ul>
+        </div>
+
+        <!-- Q&A Section -->
+        <div class="section" id="qa">
+            <h2>Q&A</h2>
+            <p>Have questions or want to help others? Use this space to ask and answer questions on data analysis topics!</p>
+            <p>Example Question: <strong>What is the difference between descriptive and inferential statistics?</strong></p>
+            <p>Example Answer: <em>Descriptive statistics summarize data from a sample using indexes like the mean or standard deviation, while inferential statistics make predictions or inferences about a population based on a sample.</em></p>
+        </div>
     </main>
 
     <!-- Footer -->
@@ -94,4 +145,3 @@
 
 </body>
 </html>
-
