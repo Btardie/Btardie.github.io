@@ -19,20 +19,30 @@
             align-items: center;
             padding: 20px;
         }
+
+        /* Navigation Bar */
+        nav {
+            width: 100%;
+            background-color: #FFD1A9;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
         nav ul {
             list-style-type: none;
             display: flex;
             justify-content: center;
-            background-color: #FFD1A9;
-            padding: 10px 0;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            z-index: 1000;
+            margin: 0;
+            padding: 0;
         }
+
         nav ul li {
             margin: 0 15px;
         }
+
         nav ul li a {
             text-decoration: none;
             color: #343a40;
@@ -41,6 +51,7 @@
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
+
         nav ul li a:hover {
             background-color: #ffcccb;
         }
