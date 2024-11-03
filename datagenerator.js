@@ -60,8 +60,7 @@ function configureColumnOptions(colNum, type) {
 }
 
 function generatePreview() {
-    const numPreviewRows = 15; // Display the first 15 rows in the interactive preview
-    const totalRecords = parseInt(document.getElementById('numRecords').value);
+    const numPreviewRows = 15; // Display only the first 15 rows in the interactive preview
     const columns = [];
 
     // Collect column configurations
@@ -78,9 +77,8 @@ function generatePreview() {
         });
     }
 
-    // Generate full dataset but only display the first 15 rows for the preview
-    const fullDataset = Array.from({ length: totalRecords }, () => columns.map(generateCell));
-    const previewRows = fullDataset.slice(0, numPreviewRows); // Take only the first 15 rows for preview
+    // Generate only the preview dataset (first 15 rows) based on column settings
+    const previewRows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
     displayPreviewTable(columns.map(c => c.name), previewRows);
 }
 
@@ -159,4 +157,3 @@ function downloadDataset() {
     a.click();
     URL.revokeObjectURL(url);
 }
-
