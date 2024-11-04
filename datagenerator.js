@@ -209,3 +209,4 @@ function displayPreviewTable(columns, rows) {
         table.appendChild(tr);
     });
 }
+
