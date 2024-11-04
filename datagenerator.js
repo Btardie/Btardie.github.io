@@ -1,4 +1,5 @@
 let columnCount = 0;
+let distributionChart;
 
 function addColumn() {
     columnCount++;
@@ -48,7 +49,7 @@ function configureColumnOptions(colNum, type) {
             </select>
             <div id="distributionOptions${colNum}" class="distribution-options"></div>
         `;
-        configureDistributionOptions(colNum, "uniform"); // Default to uniform distribution
+        configureDistributionOptions(colNum, "uniform");
     } else if (type === "date") {
         optionsDiv.innerHTML = `
             <label>Start Date:</label>
@@ -92,86 +93,8 @@ function configureDistributionOptions(colNum, distribution) {
     }
 }
 
-function generateCell(col) {
-    const distribution = col.options.querySelector(`select[name="distribution${col.colNum}"]`)?.value;
-    const isInteger = col.type === "integer";
-
-    if (col.type === "textCategory") {
-        const values = col.options.querySelector(`input[name="values${col.colNum}"]`)?.value.split(',').map(v => v.trim());
-        const probabilities = col.options.querySelector(`input[name="probabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
-        return selectRandomValue(values, probabilities) || 'N/A';
-    } else if (distribution === "uniform") {
-        const min = parseFloat(col.options.querySelector(`[name="min${col.colNum}"]`)?.value) || 0;
-        const max = parseFloat(col.options.querySelector(`[name="max${col.colNum}"]`)?.value) || 100;
-        const value = Math.random() * (max - min) + min;
-        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
-    } else if (distribution === "normal") {
-        const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
-        const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
-        const value = mean + (randomNormal() * stddev);
-        return parseFloat(value.toFixed(2));
-    } else if (distribution === "exponential") {
-        const rate = parseFloat(col.options.querySelector(`[name="rate${col.colNum}"]`)?.value) || 1;
-        const value = -Math.log(1 - Math.random()) / rate;
-        return parseFloat(value.toFixed(2));
-    } else if (distribution === "binomial") {
-        const trials = parseInt(col.options.querySelector(`[name="trials${col.colNum}"]`)?.value) || 1;
-        const probability = parseFloat(col.options.querySelector(`[name="probability${col.colNum}"]`)?.value) || 0.5;
-        const value = randomBinomial(trials, probability);
-        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
-    }
-    return 'N/A';
-}
-
-// Generate normally distributed values using Box-Muller transform
-function randomNormal() {
-    let u1 = 0, u2 = 0;
-    while (u1 === 0) u1 = Math.random();
-    while (u2 === 0) u2 = Math.random();
-    const standardNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-    return standardNormal;
-}
-
-function randomBinomial(trials, probability) {
-    let successes = 0;
-    for (let i = 0; i < trials; i++) {
-        if (Math.random() < probability) successes++;
-    }
-    return successes;
-}
-
-
-function randomNormal() {
-    let u = 0, v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
-
-function randomBinomial(trials, probability) {
-    let successes = 0;
-    for (let i = 0; i < trials; i++) {
-        if (Math.random() < probability) successes++;
-    }
-    return successes;
-}
-
-function selectRandomValue(values, probabilities) {
-    if (!values || !probabilities || values.length !== probabilities.length) return null;
-    const totalProbability = probabilities.reduce((a, b) => a + b, 0);
-    const random = Math.random() * totalProbability;
-    let cumulativeProbability = 0;
-    for (let i = 0; i < values.length; i++) {
-        cumulativeProbability += probabilities[i];
-        if (random < cumulativeProbability) {
-            return values[i];
-        }
-    }
-    return values[values.length - 1];
-}
-
 function generatePreview() {
-    const numObservations = parseInt(document.getElementById('numObservations').value) || 15; // Use all specified observations
+    const numObservations = parseInt(document.getElementById('numObservations').value) || 50; // Use all specified observations
     const columns = [];
     let distributionData = [];
 
@@ -230,3 +153,59 @@ function displayPreviewTable(columns, rows) {
     });
 }
 
+function updateDistributionChart(data) {
+    const ctx = document.getElementById('distributionChart').getContext('2d');
+
+    // Destroy the existing chart if it exists
+    if (distributionChart) {
+        distributionChart.destroy();
+    }
+
+    // Define the number of bins for the histogram
+    const numBins = 20;
+    const minValue = Math.min(...data);
+    const maxValue = Math.max(...data);
+    const binWidth = (maxValue - minValue) / numBins;
+
+    // Create bins and populate frequencies
+    const bins = Array(numBins).fill(0);
+    data.forEach(value => {
+        const binIndex = Math.min(numBins - 1, Math.floor((value - minValue) / binWidth));
+        bins[binIndex]++;
+    });
+
+    // Define bin labels as midpoints for the bins
+    const labels = Array.from({ length: numBins }, (_, i) => 
+        (minValue + binWidth * i + binWidth / 2).toFixed(2)
+    );
+
+    // Create the chart
+    distributionChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Frequency',
+                data: bins,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: { display: true, text: 'Values' },
+                    beginAtZero: true,
+                },
+                y: {
+                    title: { display: true, text: 'Frequency' },
+                    beginAtZero: true,
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
