@@ -1,5 +1,6 @@
 let columnCount = 0;
 
+// Function to add a new column configuration
 function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
@@ -26,6 +27,7 @@ function addColumn() {
     generatePreview();
 }
 
+// Function to set up options based on selected data type
 function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
     optionsDiv.innerHTML = "";
@@ -59,6 +61,7 @@ function configureColumnOptions(colNum, type) {
     }
 }
 
+// Function to add distribution-specific inputs based on selection
 function configureDistributionOptions(colNum, distribution) {
     const distributionDiv = document.getElementById(`distributionOptions${colNum}`);
     distributionDiv.innerHTML = "";
@@ -92,6 +95,7 @@ function configureDistributionOptions(colNum, distribution) {
     }
 }
 
+// Function to generate a cell value based on column configuration
 function generateCell(col) {
     const distribution = col.options.querySelector(`select[name="distribution${col.colNum}"]`)?.value;
     const isInteger = col.type === "integer";
@@ -140,6 +144,7 @@ function randomBinomial(trials, probability) {
     return successes;
 }
 
+// Helper function to select a random value from an array based on probabilities
 function selectRandomValue(values, probabilities) {
     if (!values || !probabilities || values.length !== probabilities.length) return null;
     const totalProbability = probabilities.reduce((a, b) => a + b, 0);
@@ -154,9 +159,11 @@ function selectRandomValue(values, probabilities) {
     return values[values.length - 1];
 }
 
+// Generate the dataset preview and update the chart
 function generatePreview() {
     const numPreviewRows = 15;
     const columns = [];
+    let distributionData = [];
 
     for (let i = 1; i <= columnCount; i++) {
         const colName = document.querySelector(`[name=colName${i}]`).value || `Column ${i}`;
@@ -171,10 +178,25 @@ function generatePreview() {
         });
     }
 
-    const previewRows = Array.from({ length: numPreviewRows }, () => columns.map(generateCell));
+    const previewRows = Array.from({ length: numPreviewRows }, () => {
+        const row = columns.map(col => {
+            const cellValue = generateCell(col);
+            if (col.type === 'integer' || col.type === 'float') {
+                distributionData.push(cellValue);
+            }
+            return cellValue;
+        });
+        return row;
+    });
     displayPreviewTable(columns.map(c => c.name), previewRows);
+
+    // Update the distribution chart with the generated numeric data
+    if (distributionData.length > 0) {
+        updateDistributionChart(distributionData); // Call this from distributionChart.js
+    }
 }
 
+// Display the generated preview table in the HTML
 function displayPreviewTable(columns, rows) {
     const table = document.getElementById('previewTable');
     table.innerHTML = '';
