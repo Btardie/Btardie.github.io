@@ -1,6 +1,5 @@
 let columnCount = 0;
 
-// Function to add a new column configuration
 function addColumn() {
     columnCount++;
     const container = document.getElementById("columnContainer");
@@ -27,7 +26,6 @@ function addColumn() {
     generatePreview();
 }
 
-// Function to set up options based on selected data type
 function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
     optionsDiv.innerHTML = "";
@@ -61,7 +59,6 @@ function configureColumnOptions(colNum, type) {
     }
 }
 
-// Function to add distribution-specific inputs based on selection
 function configureDistributionOptions(colNum, distribution) {
     const distributionDiv = document.getElementById(`distributionOptions${colNum}`);
     distributionDiv.innerHTML = "";
@@ -95,7 +92,6 @@ function configureDistributionOptions(colNum, distribution) {
     }
 }
 
-// Function to generate a cell value based on column configuration
 function generateCell(col) {
     const distribution = col.options.querySelector(`select[name="distribution${col.colNum}"]`)?.value;
     const isInteger = col.type === "integer";
@@ -127,7 +123,6 @@ function generateCell(col) {
     return 'N/A';
 }
 
-// Helper function to generate a normally distributed random number using Box-Muller transform
 function randomNormal() {
     let u = 0, v = 0;
     while (u === 0) u = Math.random();
@@ -135,7 +130,6 @@ function randomNormal() {
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
 }
 
-// Helper function to generate a binomially distributed random number
 function randomBinomial(trials, probability) {
     let successes = 0;
     for (let i = 0; i < trials; i++) {
@@ -144,7 +138,6 @@ function randomBinomial(trials, probability) {
     return successes;
 }
 
-// Helper function to select a random value from an array based on probabilities
 function selectRandomValue(values, probabilities) {
     if (!values || !probabilities || values.length !== probabilities.length) return null;
     const totalProbability = probabilities.reduce((a, b) => a + b, 0);
@@ -159,7 +152,6 @@ function selectRandomValue(values, probabilities) {
     return values[values.length - 1];
 }
 
-// Generate the dataset preview and update the chart
 function generatePreview() {
     const numPreviewRows = 15;
     const columns = [];
@@ -190,13 +182,11 @@ function generatePreview() {
     });
     displayPreviewTable(columns.map(c => c.name), previewRows);
 
-    // Update the distribution chart with the generated numeric data
     if (distributionData.length > 0) {
-        updateDistributionChart(distributionData); // Call this from distributionChart.js
+        updateDistributionChart(distributionData);
     }
 }
 
-// Display the generated preview table in the HTML
 function displayPreviewTable(columns, rows) {
     const table = document.getElementById('previewTable');
     table.innerHTML = '';
