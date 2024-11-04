@@ -50,7 +50,7 @@ function updateDistributionChart(data) {
                 y: {
                     title: { display: true, text: 'Frequency' },
                     beginAtZero: true,
-                    max: Math.max(...bins) + 1, // Fixed y-axis based on the highest bin count
+                    max: Math.max(...bins), // Fixed y-axis based on the highest bin count
                 }
             },
             plugins: {
