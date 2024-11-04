@@ -8,7 +8,7 @@ function updateDistributionChart(data) {
         distributionChart.destroy();
     }
 
-    // Set a fixed number of bins for the histogram
+    // Use all observations in `data` to generate a histogram with 15 bins
     const numBins = 15; // Fixed number of bins
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
@@ -59,4 +59,12 @@ function updateDistributionChart(data) {
         }
     });
 }
+
+// Example usage - ensure this function is called with the full data array
+function generatePreview() {
+    const numObservations = parseInt(document.getElementById('numObservations').value) || 50;
+    const data = generateFullDataset(numObservations); // This should return the full array of observations
+    updateDistributionChart(data);
+}
+
 
