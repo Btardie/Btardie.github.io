@@ -8,8 +8,8 @@ function updateDistributionChart(data) {
         distributionChart.destroy();
     }
 
-    // Define the number of bins for the histogram
-    const numBins = 20;
+    // Dynamically calculate the number of bins based on the data length
+    const numBins = Math.ceil(Math.log2(data.length) + 1); // Using Sturges' Rule
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
@@ -56,4 +56,3 @@ function updateDistributionChart(data) {
         }
     });
 }
-
