@@ -1,24 +1,27 @@
+let distributionChart;
+
 function updateDistributionChart(data) {
     const ctx = document.getElementById('distributionChart').getContext('2d');
 
+    // Destroy the existing chart if it exists
     if (distributionChart) {
         distributionChart.destroy();
     }
 
-    // Define the number of bins and bin width for exponential distribution
-    const numBins = 15;  // Increase bins for a clearer decay pattern
+    // Define the number of bins for the histogram
+    const numBins = 20;
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
 
-    // Create bins
+    // Create bins and populate frequencies
     const bins = Array(numBins).fill(0);
     data.forEach(value => {
         const binIndex = Math.min(numBins - 1, Math.floor((value - minValue) / binWidth));
         bins[binIndex]++;
     });
 
-    // Define bin labels as midpoints
+    // Define bin labels as midpoints for the bins
     const labels = Array.from({ length: numBins }, (_, i) => 
         (minValue + binWidth * i + binWidth / 2).toFixed(2)
     );
@@ -53,3 +56,4 @@ function updateDistributionChart(data) {
         }
     });
 }
+
