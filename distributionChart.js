@@ -8,8 +8,8 @@ function updateDistributionChart(data) {
         distributionChart.destroy();
     }
 
-    // Dynamically calculate the number of bins based on the data length
-    const numBins = Math.ceil(Math.log2(data.length) + 1); // Using Sturges' Rule
+    // Dynamically calculate a higher number of bins based on data size
+    const numBins = Math.ceil(Math.sqrt(data.length) * 1.5); // Square root choice, scaled for more bins
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
@@ -26,24 +26,46 @@ function updateDistributionChart(data) {
         (minValue + binWidth * i + binWidth / 2).toFixed(2)
     );
 
+    // Calculate a normal distribution curve for overlay
+    const mean = data.reduce((a, b) => a + b, 0) / data.length;
+    const variance = data.reduce((a, b) => a + (b - mean) ** 2, 0) / data.length;
+    const stddev = Math.sqrt(variance);
+    const normalCurve = labels.map(x => {
+        const value = parseFloat(x);
+        const normalDensity = (1 / (stddev * Math.sqrt(2 * Math.PI))) * 
+                              Math.exp(-0.5 * ((value - mean) / stddev) ** 2);
+        return normalDensity * data.length * binWidth; // Scale by bin width and data length for matching frequency
+    });
+
     // Create the chart
     distributionChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Frequency',
-                data: bins,
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1,
-            }]
+            datasets: [
+                {
+                    label: 'Frequency',
+                    data: bins,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Normal Distribution',
+                    data: normalCurve,
+                    type: 'line',
+                    fill: false,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    pointRadius: 0, // Smooth curve without points
+                }
+            ]
         },
         options: {
             scales: {
                 x: {
                     title: { display: true, text: 'Values' },
-                    beginAtZero: true,
+                    beginAtZero: false,
                 },
                 y: {
                     title: { display: true, text: 'Frequency' },
@@ -51,8 +73,10 @@ function updateDistributionChart(data) {
                 }
             },
             plugins: {
-                legend: { display: false }
-            }
+                legend: { display: true }
+            },
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
