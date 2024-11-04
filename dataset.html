@@ -27,19 +27,35 @@
         }
 
         h1 {
-            font-size: 1.8em;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        /* Information Section */
+        .info-section {
+            text-align: center;
             margin-bottom: 20px;
+            max-width: 800px;
         }
 
-        .section-divider {
+        .info-section p {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        /* Two-Column Layout */
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
             width: 100%;
-            margin: 20px 0;
-            border-top: 2px solid #007bff;
+            max-width: 1000px;
         }
 
-        .chart-container {
-            max-width: 600px;
-            margin: 20px auto;
+        .column {
+            flex: 1;
+            min-width: 300px;
         }
 
         .column-settings {
@@ -60,13 +76,14 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 5px;
+            margin: 5px 0;
+            display: block;
         }
 
+        /* Preview Table Styling */
         table {
             margin-top: 20px;
             width: 100%;
-            max-width: 600px;
             border-collapse: collapse;
         }
 
@@ -75,26 +92,57 @@
             border: 1px solid #ddd;
             text-align: left;
         }
+
+        /* Divider */
+        .section-divider {
+            width: 100%;
+            margin: 20px 0;
+            border-top: 2px solid #007bff;
+        }
+
+        /* Chart Styling */
+        .chart-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Dataset Generator</h1>
-
-    <!-- Input Fields for Data Generation -->
-    <div id="columnContainer">
-        <!-- JavaScript will inject input fields here -->
+    <!-- Information Section -->
+    <div class="info-section">
+        <h1>Dataset Generator</h1>
+        <p>Welcome to the Dataset Generator! Start by specifying the number of records and adding columns with desired data types. Each column can be customized with options like text, numbers, dates, and probabilities. The generated dataset preview updates automatically as you make changes.</p>
     </div>
-    <button onclick="addColumn()">Add Column</button>
-    <button onclick="generatePreview()">Generate Dataset Preview</button>
 
-    <!-- Table to Display Dataset Preview -->
-    <table id="previewTable"></table>
+    <!-- Main Container with Two Columns -->
+    <div class="main-container">
+        
+        <!-- Left Column: Input Fields for Data Generation -->
+        <div class="column">
+            <div id="columnContainer">
+                <!-- JavaScript will inject input fields here -->
+            </div>
+            <button onclick="addColumn()">Add Column</button>
+            <button onclick="generatePreview()">Generate Dataset Preview</button>
+        </div>
+
+        <!-- Right Column: Dataset Preview Table -->
+        <div class="column">
+            <table id="previewTable"></table>
+        </div>
+    </div>
 
     <!-- Divider for New Section -->
     <div class="section-divider"></div>
 
-    <!-- Chart Section -->
+    <!-- Chart Section at Bottom -->
     <div class="chart-container">
         <h2>Distribution of Generated Data</h2>
         <canvas id="distributionChart"></canvas>
