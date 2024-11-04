@@ -12,7 +12,7 @@
     <script src="distributionChart.js"></script>
 
     <!-- Data Generator Script -->
-    <script src="datagenerator.js"></script>
+    <script src="dataGenerator.js"></script>
 
     <style>
         /* Basic Styling */
@@ -29,6 +29,34 @@
         h1 {
             font-size: 2em;
             margin-bottom: 10px;
+        }
+
+        /* Navigation Bar */
+        nav {
+            width: 100%;
+            background-color: #007bff;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
         }
 
         /* Information Section */
@@ -115,10 +143,20 @@
 </head>
 <body>
 
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#data-analysis">Data Analysis Types</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#qa">Q&A</a></li>
+        </ul>
+    </nav>
+
     <!-- Information Section -->
     <div class="info-section">
         <h1>Dataset Generator</h1>
-        <p>Welcome to the Dataset Generator! Start by specifying the number of records and adding columns with desired data types. Each column can be customized with options like text, numbers, dates, and probabilities. The generated dataset preview updates automatically as you make changes.</p>
+        <p>Welcome to the Dataset Generator! Start by specifying the number of records, then add columns with your desired data types. Each column can be customized for text, numbers, dates, or categories with specified probabilities. The dataset preview updates automatically as you make changes.</p>
     </div>
 
     <!-- Main Container with Two Columns -->
@@ -126,6 +164,10 @@
         
         <!-- Left Column: Input Fields for Data Generation -->
         <div class="column">
+            <div class="column-settings">
+                <label for="numObservations">Number of Observations:</label>
+                <input type="number" id="numObservations" name="numObservations" placeholder="Enter number of observations" oninput="generatePreview()">
+            </div>
             <div id="columnContainer">
                 <!-- JavaScript will inject input fields here -->
             </div>
