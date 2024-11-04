@@ -14,11 +14,10 @@ function addColumn() {
 
         <label>Data Type:</label>
         <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generatePreview();" aria-label="Data type">
-            <option value="text">Text</option>
+            <option value="textCategory">Text/Category</option>
             <option value="integer">Integer</option>
             <option value="float">Float</option>
             <option value="date">Date</option>
-            <option value="category">Category</option>
         </select>
 
         <div id="colOptions${columnCount}" class="options-container"></div>
@@ -31,7 +30,14 @@ function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
     optionsDiv.innerHTML = "";
 
-    if (type === "integer" || type === "float") {
+    if (type === "textCategory") {
+        optionsDiv.innerHTML = `
+            <label>Values (comma-separated):</label>
+            <input type="text" name="values${colNum}" placeholder="e.g., A, B, C" oninput="generatePreview()">
+            <label>Probabilities (comma-separated, matching values):</label>
+            <input type="text" name="probabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
+        `;
+    } else if (type === "integer" || type === "float") {
         optionsDiv.innerHTML = `
             <label>Distribution:</label>
             <select name="distribution${colNum}" onchange="configureDistributionOptions(${colNum}, this.value)">
@@ -43,13 +49,6 @@ function configureColumnOptions(colNum, type) {
             <div id="distributionOptions${colNum}" class="distribution-options"></div>
         `;
         configureDistributionOptions(colNum, "uniform"); // Default to uniform distribution
-    } else if (type === "text" || type === "category") {
-        optionsDiv.innerHTML = `
-            <label>Values (comma-separated):</label>
-            <input type="text" name="values${colNum}" placeholder="e.g., A, B, C" oninput="generatePreview()">
-            <label>Probabilities (comma-separated, matching values):</label>
-            <input type="text" name="probabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
-        `;
     } else if (type === "date") {
         optionsDiv.innerHTML = `
             <label>Start Date:</label>
@@ -97,7 +96,11 @@ function generateCell(col) {
     const distribution = col.options.querySelector(`select[name="distribution${col.colNum}"]`)?.value;
     const isInteger = col.type === "integer";
 
-    if (distribution === "uniform") {
+    if (col.type === "textCategory") {
+        const values = col.options.querySelector(`input[name="values${col.colNum}"]`)?.value.split(',').map(v => v.trim());
+        const probabilities = col.options.querySelector(`input[name="probabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
+        return selectRandomValue(values, probabilities) || 'N/A';
+    } else if (distribution === "uniform") {
         const min = parseFloat(col.options.querySelector(`[name="min${col.colNum}"]`)?.value) || 0;
         const max = parseFloat(col.options.querySelector(`[name="max${col.colNum}"]`)?.value) || 100;
         const value = Math.random() * (max - min) + min;
@@ -135,6 +138,20 @@ function randomBinomial(trials, probability) {
         if (Math.random() < probability) successes++;
     }
     return successes;
+}
+
+function selectRandomValue(values, probabilities) {
+    if (!values || !probabilities || values.length !== probabilities.length) return null;
+    const totalProbability = probabilities.reduce((a, b) => a + b, 0);
+    const random = Math.random() * totalProbability;
+    let cumulativeProbability = 0;
+    for (let i = 0; i < values.length; i++) {
+        cumulativeProbability += probabilities[i];
+        if (random < cumulativeProbability) {
+            return values[i];
+        }
+    }
+    return values[values.length - 1];
 }
 
 function generatePreview() {
