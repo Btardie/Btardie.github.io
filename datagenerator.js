@@ -113,7 +113,7 @@ function generateCell(col) {
     } else if (distribution === "exponential") {
         const rate = parseFloat(col.options.querySelector(`[name="rate${col.colNum}"]`)?.value) || 1;
         const value = -Math.log(1 - Math.random()) / rate;
-        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
+        return parseFloat(value.toFixed(2));
     } else if (distribution === "binomial") {
         const trials = parseInt(col.options.querySelector(`[name="trials${col.colNum}"]`)?.value) || 1;
         const probability = parseFloat(col.options.querySelector(`[name="probability${col.colNum}"]`)?.value) || 0.5;
