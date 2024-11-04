@@ -109,7 +109,7 @@ function generateCell(col) {
         const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
         const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
         const value = mean + (randomNormal() * stddev);
-        return isInteger ? Math.round(value) : parseFloat(value.toFixed(2));
+        return parseFloat(value.toFixed(2));
     } else if (distribution === "exponential") {
         const rate = parseFloat(col.options.querySelector(`[name="rate${col.colNum}"]`)?.value) || 1;
         const value = -Math.log(1 - Math.random()) / rate;
@@ -122,6 +122,24 @@ function generateCell(col) {
     }
     return 'N/A';
 }
+
+// Generate normally distributed values using Box-Muller transform
+function randomNormal() {
+    let u1 = 0, u2 = 0;
+    while (u1 === 0) u1 = Math.random();
+    while (u2 === 0) u2 = Math.random();
+    const standardNormal = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    return standardNormal;
+}
+
+function randomBinomial(trials, probability) {
+    let successes = 0;
+    for (let i = 0; i < trials; i++) {
+        if (Math.random() < probability) successes++;
+    }
+    return successes;
+}
+
 
 function randomNormal() {
     let u = 0, v = 0;
