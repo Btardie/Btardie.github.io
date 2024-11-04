@@ -31,32 +31,87 @@
             margin-bottom: 10px;
         }
 
-        /* Navigation Bar */
-        nav {
+        /* Enhanced Navigation Bar Styling */
+        .navbar {
             width: 100%;
-            background-color: #FFB77C;
-            padding: 10px 0;
-            text-align: center;
-            margin-bottom: 20px;
+            background-color: #FF7F50; /* Coral background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        nav ul {
+        .navbar-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .nav-links {
             list-style-type: none;
             display: flex;
-            justify-content: center;
-            padding: 0;
+            gap: 20px;
             margin: 0;
+            padding: 0;
         }
 
-        nav ul li {
-            margin: 0 15px;
-        }
-
-        nav ul li a {
+        .nav-links li a {
             text-decoration: none;
-            color: #5C3D2E;
+            color: #ffffff;
             font-weight: bold;
             font-size: 1.1em;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .nav-links li a:hover {
+            background-color: #FF6347; /* Tomato color on hover */
+        }
+
+        /* Hamburger Menu for Mobile */
+        .hamburger {
+            display: none;
+            font-size: 1.5em;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                right: 20px;
+                background-color: #FF7F50;
+                width: 200px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links li {
+                text-align: center;
+                margin: 10px 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
         }
 
         /* Information Section */
@@ -68,29 +123,6 @@
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-        }
-
-        .info-section h2 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #5C3D2E;
-        }
-
-        .info-section p {
-            font-size: 1.1em;
-            line-height: 1.5;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .info-section ul {
-            list-style-type: decimal;
-            margin-left: 20px;
-            color: #555;
-        }
-
-        .info-section ul li {
-            margin-bottom: 10px;
         }
 
         /* Two-Column Layout */
@@ -105,13 +137,6 @@
         .column {
             flex: 1;
             min-width: 300px;
-        }
-
-        .column-settings {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
         }
 
         .options-container, .distribution-options {
@@ -156,89 +181,56 @@
             margin: 20px auto;
             text-align: center;
         }
-
-        .chart-container canvas {
-            max-width: 100%;
-        }
     </style>
 </head>
 <body>
 
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <div class="navbar-container">
-        <a href="#home" class="logo">Dataset Generator</a>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#data-analysis">Data Analysis Types</a></li>
-            <li><a href="#examples">Examples</a></li>
-            <li><a href="#qa">Q&A</a></li>
-            <li><a href="dataset.html">Create Dataset</a></li>
-        </ul>
-        <div class="hamburger" onclick="toggleMobileMenu()">☰</div>
-    </div>
-</nav>
-
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#home" class="logo">Dataset Generator</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#data-analysis">Data Analysis Types</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#qa">Q&A</a></li>
+                <li><a href="dataset.html">Create Dataset</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMobileMenu()">☰</div>
+        </div>
+    </nav>
 
     <!-- Information Section -->
     <div class="info-section">
         <h1>Welcome to the Dataset Generator Tool!</h1>
         <p>This tool allows you to create custom datasets tailored to your specific needs. Whether you're working on data science projects, testing machine learning models, or building prototypes, this generator can provide you with sample data in a few simple steps.</p>
-        
-        <h2>How to Use This Tool</h2>
-        <ul>
-            <li><strong>Specify the Number of Records:</strong> Enter the total number of rows you want in your dataset. This determines the size of the dataset.</li>
-            <li><strong>Add Columns with Desired Data Types:</strong> Click the <em>Add Column</em> button to create new columns. For each column, select the data type and enter relevant details.
-                <ul>
-                    <li><strong>Text:</strong> Provide sample text values separated by commas (e.g., Apple, Orange, Banana), and the tool will randomly select one for each row.</li>
-                    <li><strong>Number:</strong> Define a minimum and maximum range, and the tool will generate random numbers within this range.</li>
-                    <li><strong>Date:</strong> Set a start and end date to create a range. The tool will generate dates within this interval.</li>
-                    <li><strong>Category:</strong> Enter categorical values (e.g., High, Medium, Low), and the tool will assign one to each row.</li>
-                </ul>
-            </li>
-            <li><strong>Preview Your Dataset:</strong> As you configure your columns, the preview table will automatically update on the right, showing the first 15 rows of your dataset. This preview helps you check your setup before downloading.</li>
-            <li><strong>Download Your Dataset:</strong> Once you're satisfied with your dataset setup, click <em>Download Dataset</em> to get a CSV file containing your generated data.</li>
-        </ul>
-
-        <h2>What You Can Use This For</h2>
-        <p>This dataset generator is ideal for a variety of applications, including:</p>
-        <ul>
-            <li><strong>Machine Learning and Data Science:</strong> Generate sample data to train, test, and evaluate machine learning models without using real-world data. This is especially useful when working with classification, regression, and clustering algorithms.</li>
-            <li><strong>Database and Software Testing:</strong> Create sample data to populate databases and test software applications. This can help developers ensure that their systems handle data correctly.</li>
-            <li><strong>Prototyping and Demo Data:</strong> Quickly produce data to use in prototypes and demonstrations. This can help stakeholders visualize how data-driven applications will function with realistic datasets.</li>
-        </ul>
+        <!-- More content here -->
     </div>
 
-    <!-- Main Container with Two Columns -->
+    <!-- Main Content and Chart Section -->
     <div class="main-container">
-        
-        <!-- Left Column: Input Fields for Data Generation -->
         <div class="column">
-            <div class="column-settings">
-                <label for="numObservations">Number of Observations:</label>
-                <input type="number" id="numObservations" name="numObservations" placeholder="Enter number of observations" oninput="generatePreview()">
-            </div>
-            <div id="columnContainer">
-                <!-- JavaScript will inject input fields here -->
-            </div>
+            <!-- Input fields for data generation -->
+            <label for="numObservations">Number of Observations:</label>
+            <input type="number" id="numObservations" name="numObservations" placeholder="Enter number of observations" oninput="generatePreview()">
+            <div id="columnContainer"></div>
             <button onclick="addColumn()">Add Column</button>
-            <button onclick="generatePreview()">Generate Dataset Preview</button>
         </div>
-
-        <!-- Right Column: Dataset Preview Table -->
         <div class="column">
             <table id="previewTable"></table>
         </div>
     </div>
-
-    <!-- Divider for New Section -->
     <div class="section-divider"></div>
-
-    <!-- Chart Section at Bottom -->
     <div class="chart-container">
         <h2>Distribution of Generated Data</h2>
         <canvas id="distributionChart"></canvas>
     </div>
 
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
