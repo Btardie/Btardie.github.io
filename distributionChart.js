@@ -9,7 +9,7 @@ function updateDistributionChart(data) {
     }
 
     // Set a fixed number of bins for the histogram
-    const numBins = 20; // You can adjust this to control the resolution of the histogram
+    const numBins = 15; // Fixed number of bins
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
@@ -26,7 +26,7 @@ function updateDistributionChart(data) {
         (minValue + binWidth * i + binWidth / 2).toFixed(2)
     );
 
-    // Create the chart with no dynamic scaling
+    // Create the chart
     distributionChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -50,7 +50,7 @@ function updateDistributionChart(data) {
                 y: {
                     title: { display: true, text: 'Frequency' },
                     beginAtZero: true,
-                    max: Math.max(...bins), // Fixed y-axis based on the highest bin count
+                    max: Math.max(...bins) + 1 // Add a small margin above the highest bin count
                 }
             },
             plugins: {
@@ -59,3 +59,4 @@ function updateDistributionChart(data) {
         }
     });
 }
+
