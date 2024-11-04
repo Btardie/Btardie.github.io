@@ -171,7 +171,7 @@ function selectRandomValue(values, probabilities) {
 }
 
 function generatePreview() {
-    const numPreviewRows = 15;
+    const numObservations = parseInt(document.getElementById('numObservations').value) || 15; // Use all specified observations
     const columns = [];
     let distributionData = [];
 
@@ -188,7 +188,7 @@ function generatePreview() {
         });
     }
 
-    const previewRows = Array.from({ length: numPreviewRows }, () => {
+    const dataset = Array.from({ length: numObservations }, () => {
         const row = columns.map(col => {
             const cellValue = generateCell(col);
             if (col.type === 'integer' || col.type === 'float') {
@@ -198,8 +198,10 @@ function generatePreview() {
         });
         return row;
     });
-    displayPreviewTable(columns.map(c => c.name), previewRows);
+    
+    displayPreviewTable(columns.map(c => c.name), dataset.slice(0, 15)); // Show first 15 rows for table preview only
 
+    // Use the full dataset for distribution chart
     if (distributionData.length > 0) {
         updateDistributionChart(distributionData);
     }
@@ -227,3 +229,4 @@ function displayPreviewTable(columns, rows) {
         table.appendChild(tr);
     });
 }
+
