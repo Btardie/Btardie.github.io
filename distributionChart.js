@@ -8,8 +8,8 @@ function updateDistributionChart(data) {
         distributionChart.destroy();
     }
 
-    // Dynamically calculate the number of bins based on the data length (Sturges' Rule)
-    const numBins = Math.ceil(Math.log2(data.length) + 1);
+    // Dynamically calculate the number of bins based on the data length
+    const numBins = Math.ceil(Math.log2(data.length) + 1); // Using Sturges' Rule
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
@@ -21,20 +21,19 @@ function updateDistributionChart(data) {
         bins[binIndex]++;
     });
 
-    // Filter out empty bins and labels
-    const filteredBins = bins.filter(count => count > 0);
-    const labels = Array.from({ length: numBins }, (_, i) =>
+    // Define bin labels as midpoints for the bins
+    const labels = Array.from({ length: numBins }, (_, i) => 
         (minValue + binWidth * i + binWidth / 2).toFixed(2)
-    ).filter((_, i) => bins[i] > 0);
+    );
 
-    // Create the chart with filtered data
+    // Create the chart
     distributionChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
                 label: 'Frequency',
-                data: filteredBins,
+                data: bins,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
@@ -44,22 +43,16 @@ function updateDistributionChart(data) {
             scales: {
                 x: {
                     title: { display: true, text: 'Values' },
-                    beginAtZero: false,
-                    ticks: {
-                        autoSkip: false, // Show all labels for better granularity
-                    }
+                    beginAtZero: true,
                 },
                 y: {
                     title: { display: true, text: 'Frequency' },
                     beginAtZero: true,
-                    suggestedMax: Math.max(...filteredBins) + 1, // Adjust the y-axis max for better spacing
                 }
             },
             plugins: {
                 legend: { display: false }
-            },
-            responsive: true,
-            maintainAspectRatio: false
+            }
         }
     });
 }
