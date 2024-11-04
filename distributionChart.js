@@ -3,12 +3,10 @@ let distributionChart;
 function updateDistributionChart(data) {
     const ctx = document.getElementById('distributionChart').getContext('2d');
 
-    // Destroy the chart if it already exists (for updates)
     if (distributionChart) {
         distributionChart.destroy();
     }
 
-    // Set up histogram-style data for the distribution
     const labels = Array.from(new Set(data)).sort((a, b) => a - b);
     const counts = labels.map(label => data.filter(value => value === label).length);
 
