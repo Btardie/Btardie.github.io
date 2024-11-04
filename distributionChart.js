@@ -1,5 +1,3 @@
-let distributionChart;
-
 function updateDistributionChart(data) {
     const ctx = document.getElementById('distributionChart').getContext('2d');
 
@@ -7,8 +5,8 @@ function updateDistributionChart(data) {
         distributionChart.destroy();
     }
 
-    // Define the number of bins and bin width
-    const numBins = 10;
+    // Define the number of bins and bin width for exponential distribution
+    const numBins = 15;  // Increase bins for a clearer decay pattern
     const minValue = Math.min(...data);
     const maxValue = Math.max(...data);
     const binWidth = (maxValue - minValue) / numBins;
