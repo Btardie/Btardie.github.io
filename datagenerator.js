@@ -13,7 +13,7 @@ function addColumn() {
         <input type="text" name="colName${columnCount}" placeholder="Enter column name" oninput="generateFullDataset()" aria-label="Column name">
 
         <label>Data Type:</label>
-        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value); generateFullDataset();" aria-label="Data type">
+        <select name="colType${columnCount}" onchange="configureColumnOptions(${columnCount}, this.value);" aria-label="Data type">
             <option value="textCategory">Text/Category</option>
             <option value="integer">Integer</option>
             <option value="float">Float</option>
@@ -23,8 +23,80 @@ function addColumn() {
         <div id="colOptions${columnCount}" class="options-container"></div>
     `;
     container.appendChild(div);
-    generateFullDataset();
+    generateFullDataset(); // Generate dataset preview on column addition
 }
+
+function configureColumnOptions(colNum, type) {
+    const optionsDiv = document.getElementById(`colOptions${colNum}`);
+    optionsDiv.innerHTML = ""; // Clear previous options
+
+    // Display relevant options based on selected data type
+    if (type === "textCategory") {
+        optionsDiv.innerHTML = `
+            <label>Values (comma-separated):</label>
+            <input type="text" name="values${colNum}" placeholder="e.g., A, B, C" oninput="generateFullDataset()">
+            <label>Probabilities (comma-separated, matching values):</label>
+            <input type="text" name="probabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generateFullDataset()">
+        `;
+    } else if (type === "integer" || type === "float") {
+        optionsDiv.innerHTML = `
+            <label>Distribution:</label>
+            <select name="distribution${colNum}" onchange="configureDistributionOptions(${colNum}, this.value); generateFullDataset();">
+                <option value="uniform">Uniform</option>
+                <option value="normal">Normal</option>
+                <option value="exponential">Exponential</option>
+                <option value="binomial">Binomial</option>
+            </select>
+            <div id="distributionOptions${colNum}" class="distribution-options"></div>
+        `;
+        configureDistributionOptions(colNum, "uniform"); // Default to uniform distribution
+    } else if (type === "date") {
+        optionsDiv.innerHTML = `
+            <label>Start Date:</label>
+            <input type="date" name="startDate${colNum}" oninput="generateFullDataset()">
+            <label>End Date:</label>
+            <input type="date" name="endDate${colNum}" oninput="generateFullDataset()">
+        `;
+    }
+}
+
+function configureDistributionOptions(colNum, distribution) {
+    const distributionDiv = document.getElementById(`distributionOptions${colNum}`);
+    distributionDiv.innerHTML = ""; // Clear previous distribution options
+
+    // Show additional fields based on the chosen distribution
+    if (distribution === "uniform") {
+        distributionDiv.innerHTML = `
+            <label>Min:</label>
+            <input type="number" name="min${colNum}" placeholder="Minimum value" oninput="generateFullDataset()">
+            <label>Max:</label>
+            <input type="number" name="max${colNum}" placeholder="Maximum value" oninput="generateFullDataset()">
+        `;
+    } else if (distribution === "normal") {
+        distributionDiv.innerHTML = `
+            <label>Mean:</label>
+            <input type="number" name="mean${colNum}" placeholder="Mean" oninput="generateFullDataset()">
+            <label>Standard Deviation:</label>
+            <input type="number" name="stddev${colNum}" placeholder="Standard Deviation" oninput="generateFullDataset()">
+        `;
+    } else if (distribution === "exponential") {
+        distributionDiv.innerHTML = `
+            <label>Rate (λ):</label>
+            <input type="number" name="rate${colNum}" placeholder="Rate (lambda)" oninput="generateFullDataset()">
+        `;
+    } else if (distribution === "binomial") {
+        distributionDiv.innerHTML = `
+            <label>Trials (n):</label>
+            <input type="number" name="trials${colNum}" placeholder="Number of trials" oninput="generateFullDataset()">
+            <label>Probability of Success (p):</label>
+            <input type="number" name="probability${colNum}" placeholder="Probability" step="0.01" oninput="generateFullDataset()">
+        `;
+    }
+}
+
+// The rest of your code for generating cells, previewing, and updating the distribution chart remains the same
+// Replace 'generatePreview()' calls with 'generateFullDataset()' for updating previews and charts based on the full dataset
+
 
 function generateCell(col) {
     // Implementation of generateCell remains the same
