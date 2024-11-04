@@ -31,45 +31,25 @@ function configureColumnOptions(colNum, type) {
     const optionsDiv = document.getElementById(`colOptions${colNum}`);
     optionsDiv.innerHTML = "";
 
-    if (type === "text") {
+    if (type === "integer" || type === "float") {
         optionsDiv.innerHTML = `
-            <label>Sample Text Values (comma-separated):</label>
-            <input type="text" name="textValues${colNum}" placeholder="e.g., Alice, Bob, Charlie" oninput="generatePreview()">
-            <label>Probabilities (comma-separated, matching text values):</label>
-            <input type="text" name="textProbabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
-        `;
-    } else if (type === "integer" || type === "float") {
-        optionsDiv.innerHTML = `
-            <label>Mode:</label>
-            <select name="mode${colNum}" onchange="generatePreview()">
-                <option value="basic">Basic</option>
-                <option value="advanced">Advanced</option>
+            <label>Distribution:</label>
+            <select name="distribution${colNum}" onchange="configureDistributionOptions(${colNum}, this.value)">
+                <option value="uniform">Uniform</option>
+                <option value="normal">Normal</option>
+                <option value="exponential">Exponential</option>
+                <option value="binomial">Binomial</option>
             </select>
-            <div id="basicOptions${colNum}" class="basic-options">
-                <label>Range:</label>
-                <input type="number" name="minNum${colNum}" placeholder="Min" oninput="generatePreview()">
-                <input type="number" name="maxNum${colNum}" placeholder="Max" oninput="generatePreview()">
-            </div>
-            <div id="advancedOptions${colNum}" class="advanced-options" style="display: none;">
-                <label>Mean:</label>
-                <input type="number" name="mean${colNum}" placeholder="Mean" oninput="generatePreview()">
-                <label>Standard Deviation:</label>
-                <input type="number" name="stddev${colNum}" placeholder="Standard Deviation" oninput="generatePreview()">
-            </div>
+            <div id="distributionOptions${colNum}" class="distribution-options"></div>
         `;
-        
-        const modeSelector = optionsDiv.querySelector(`select[name="mode${colNum}"]`);
-        modeSelector.addEventListener('change', () => {
-            const basicOptions = document.getElementById(`basicOptions${colNum}`);
-            const advancedOptions = document.getElementById(`advancedOptions${colNum}`);
-            if (modeSelector.value === "basic") {
-                basicOptions.style.display = "block";
-                advancedOptions.style.display = "none";
-            } else {
-                basicOptions.style.display = "none";
-                advancedOptions.style.display = "block";
-            }
-        });
+        configureDistributionOptions(colNum, "uniform"); // Default to uniform distribution
+    } else if (type === "text" || type === "category") {
+        optionsDiv.innerHTML = `
+            <label>Values (comma-separated):</label>
+            <input type="text" name="values${colNum}" placeholder="e.g., A, B, C" oninput="generatePreview()">
+            <label>Probabilities (comma-separated, matching values):</label>
+            <input type="text" name="probabilities${colNum}" placeholder="e.g., 0.5, 0.3, 0.2" oninput="generatePreview()">
+        `;
     } else if (type === "date") {
         optionsDiv.innerHTML = `
             <label>Start Date:</label>
@@ -77,83 +57,84 @@ function configureColumnOptions(colNum, type) {
             <label>End Date:</label>
             <input type="date" name="endDate${colNum}" oninput="generatePreview()">
         `;
-    } else if (type === "category") {
-        optionsDiv.innerHTML = `
-            <label>Categories:</label>
-            <div id="categoryOptions${colNum}"></div>
-            <button type="button" onclick="addCategoryOption(${colNum})">Add Category</button>
-        `;
-        addCategoryOption(colNum); // Add the first category option by default
     }
 }
 
-function addCategoryOption(colNum) {
-    const categoryContainer = document.getElementById(`categoryOptions${colNum}`);
-    const categoryCount = categoryContainer.children.length + 1;
-    
-    const categoryDiv = document.createElement("div");
-    categoryDiv.classList.add("category-option");
-    categoryDiv.innerHTML = `
-        <label>Category ${categoryCount}:</label>
-        <input type="text" name="categoryValue${colNum}_${categoryCount}" placeholder="Category value" oninput="generatePreview()">
-        <label>Probability:</label>
-        <input type="number" step="0.01" name="categoryProbability${colNum}_${categoryCount}" placeholder="e.g., 0.5" oninput="generatePreview()">
-    `;
-    categoryContainer.appendChild(categoryDiv);
+function configureDistributionOptions(colNum, distribution) {
+    const distributionDiv = document.getElementById(`distributionOptions${colNum}`);
+    distributionDiv.innerHTML = "";
+
+    if (distribution === "uniform") {
+        distributionDiv.innerHTML = `
+            <label>Min:</label>
+            <input type="number" name="min${colNum}" placeholder="Minimum value" oninput="generatePreview()">
+            <label>Max:</label>
+            <input type="number" name="max${colNum}" placeholder="Maximum value" oninput="generatePreview()">
+        `;
+    } else if (distribution === "normal") {
+        distributionDiv.innerHTML = `
+            <label>Mean:</label>
+            <input type="number" name="mean${colNum}" placeholder="Mean" oninput="generatePreview()">
+            <label>Standard Deviation:</label>
+            <input type="number" name="stddev${colNum}" placeholder="Standard Deviation" oninput="generatePreview()">
+        `;
+    } else if (distribution === "exponential") {
+        distributionDiv.innerHTML = `
+            <label>Rate (λ):</label>
+            <input type="number" name="rate${colNum}" placeholder="Rate (lambda)" oninput="generatePreview()">
+        `;
+    } else if (distribution === "binomial") {
+        distributionDiv.innerHTML = `
+            <label>Trials (n):</label>
+            <input type="number" name="trials${colNum}" placeholder="Number of trials" oninput="generatePreview()">
+            <label>Probability of Success (p):</label>
+            <input type="number" name="probability${colNum}" placeholder="Probability" step="0.01" oninput="generatePreview()">
+        `;
+    }
 }
 
 function generateCell(col) {
-    if (col.type === "text") {
-        const values = col.options.querySelector(`input[name="textValues${col.colNum}"]`)?.value.split(',').map(v => v.trim());
-        const probabilities = col.options.querySelector(`input[name="textProbabilities${col.colNum}"]`)?.value.split(',').map(p => parseFloat(p.trim()));
-        return selectRandomValue(values, probabilities) || 'Sample Text';
-    } else if (col.type === "integer" || col.type === "float") {
-        const mode = col.options.querySelector(`select[name="mode${col.colNum}"]`).value;
-        const isInteger = col.type === "integer";
-        if (mode === "basic") {
-            const min = parseFloat(col.options.querySelector(`[name="minNum${col.colNum}"]`)?.value) || 0;
-            const max = parseFloat(col.options.querySelector(`[name="maxNum${col.colNum}"]`)?.value) || 100;
-            const value = Math.random() * (max - min) + min;
-            return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
-        } else if (mode === "advanced") {
-            const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
-            const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
-            const value = (Math.random() * stddev) + mean;
-            return isInteger ? Math.round(value) : parseFloat(value.toFixed(2));
-        }
-    } else if (col.type === "date") {
-        const startDate = new Date(col.options.querySelector(`[name="startDate${col.colNum}"]`)?.value);
-        const endDate = new Date(col.options.querySelector(`[name="endDate${col.colNum}"]`)?.value);
-        if (isNaN(startDate) || isNaN(endDate)) return '2023-01-01';
-        const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
-        return randomDate.toISOString().split('T')[0];
-    } else if (col.type === "category") {
-        const values = [];
-        const probabilities = [];
-        const categoryOptions = col.options.querySelectorAll(".category-option");
-        categoryOptions.forEach(option => {
-            const value = option.querySelector(`input[name^="categoryValue"]`).value.trim();
-            const probability = parseFloat(option.querySelector(`input[name^="categoryProbability"]`).value) || 0;
-            values.push(value);
-            probabilities.push(probability);
-        });
-        return selectRandomValue(values, probabilities) || 'Category';
+    const distribution = col.options.querySelector(`select[name="distribution${col.colNum}"]`)?.value;
+    const isInteger = col.type === "integer";
+
+    if (distribution === "uniform") {
+        const min = parseFloat(col.options.querySelector(`[name="min${col.colNum}"]`)?.value) || 0;
+        const max = parseFloat(col.options.querySelector(`[name="max${col.colNum}"]`)?.value) || 100;
+        const value = Math.random() * (max - min) + min;
+        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
+    } else if (distribution === "normal") {
+        const mean = parseFloat(col.options.querySelector(`[name="mean${col.colNum}"]`)?.value) || 0;
+        const stddev = parseFloat(col.options.querySelector(`[name="stddev${col.colNum}"]`)?.value) || 1;
+        const value = mean + (randomNormal() * stddev);
+        return isInteger ? Math.round(value) : parseFloat(value.toFixed(2));
+    } else if (distribution === "exponential") {
+        const rate = parseFloat(col.options.querySelector(`[name="rate${col.colNum}"]`)?.value) || 1;
+        const value = -Math.log(1 - Math.random()) / rate;
+        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
+    } else if (distribution === "binomial") {
+        const trials = parseInt(col.options.querySelector(`[name="trials${col.colNum}"]`)?.value) || 1;
+        const probability = parseFloat(col.options.querySelector(`[name="probability${col.colNum}"]`)?.value) || 0.5;
+        const value = randomBinomial(trials, probability);
+        return isInteger ? Math.floor(value) : parseFloat(value.toFixed(2));
     }
     return 'N/A';
 }
 
-function selectRandomValue(values, probabilities) {
-    if (!values || !probabilities || values.length !== probabilities.length) return null;
-    const totalProbability = probabilities.reduce((a, b) => a + b, 0);
-    const random = Math.random() * totalProbability;
-    let cumulativeProbability = 0;
-    for (let i = 0; i < values.length; i++) {
-        cumulativeProbability += probabilities[i];
-        if (random < cumulativeProbability) {
-            return values[i];
-        }
+// Helper function to generate a normally distributed random number using Box-Muller transform
+function randomNormal() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+// Helper function to generate a binomially distributed random number
+function randomBinomial(trials, probability) {
+    let successes = 0;
+    for (let i = 0; i < trials; i++) {
+        if (Math.random() < probability) successes++;
     }
-    return values[values.length - 1];
+    return successes;
 }
 
 function generatePreview() {
@@ -199,38 +180,3 @@ function displayPreviewTable(columns, rows) {
         table.appendChild(tr);
     });
 }
-
-function downloadDataset() {
-    const spinner = document.getElementById("loadingSpinner");
-    spinner.style.display = "block";
-
-    const totalRecords = parseInt(document.getElementById('numRecords').value);
-    const columns = [];
-
-    for (let i = 1; i <= columnCount; i++) {
-        const colName = document.querySelector(`[name=colName${i}]`).value || `Column ${i}`;
-        const colType = document.querySelector(`[name=colType${i}]`).value;
-        const colOptions = document.querySelector(`#colOptions${i}`);
-        
-        columns.push({
-            name: colName,
-            type: colType,
-            options: colOptions,
-            colNum: i
-        });
-    }
-
-    const fullDataset = Array.from({ length: totalRecords }, () => columns.map(generateCell));
-    const csvContent = [columns.map(c => c.name).join(','), ...fullDataset.map(row => row.join(','))].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dataset.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-
-    setTimeout(() => spinner.style.display = "none", 500);
-}
-
