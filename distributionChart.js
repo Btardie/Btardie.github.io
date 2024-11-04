@@ -62,6 +62,8 @@ function updateDistributionChart(data) {
             ]
         },
         options: {
+            responsive: false, // Fixed size, disable auto-resize
+            maintainAspectRatio: true, // Maintain aspect ratio to prevent growth
             scales: {
                 x: {
                     title: { display: true, text: 'Values' },
@@ -74,9 +76,7 @@ function updateDistributionChart(data) {
             },
             plugins: {
                 legend: { display: true }
-            },
-            responsive: true,
-            maintainAspectRatio: false
+            }
         }
     });
 }
